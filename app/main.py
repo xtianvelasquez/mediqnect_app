@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.endpoints import user, auth
+
+from app.database import init_db
+from app.api.v1.endpoints import router
 
 app = FastAPI(title='MediQnect')
 
@@ -12,6 +14,10 @@ app.add_middleware(
   allow_headers=['*'],
 )
 
-# Include routers
-app.include_router(auth.router, prefix='/auth', tags=['auth'])
-app.include_router(user.router, prefix='/user', tags=['user'])
+# Initialize Database
+@app.on_event('startup')
+def on_startup():
+  init_db()
+
+# Routers
+app.include_router(router)

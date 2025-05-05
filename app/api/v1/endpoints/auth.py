@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from app.database import get_db
-from app.core import create_token, verify_token, validate_password
+from app.core import create_token, verify_token, validate_password, hash_password, verify_password
 from app.services import inspect_duration
 from app.models import User
 from app.schemas import Token_Response, User_Login, User_Create, Change_Password
@@ -12,11 +12,9 @@ router = APIRouter()
 
 @router.post('/token', response_model=Token_Response, status_code=200) # User login
 async def user_login(data: User_Login, db: Session = Depends(get_db)):
-  user = db.query(User).filter(
-    User.username == data.username,
-    User.user_password == data.user_password).first()
-  
-  if not user or user.user_password != data.user_password:
+  user = db.query(User).filter(User.username == data.username).first()
+
+  if not user or not verify_password(data.user_password, user.user_password):  
     raise HTTPException(status_code=401, detail='Invalid username or password.')
 
   token = create_token({
@@ -38,7 +36,7 @@ async def user_signup(data: User_Create, db: Session = Depends(get_db)):
 
   new_user = User(
     username=data.username,
-    user_password=data.user_password,
+    user_password=hash_password(data.user_password),
     dispenser_code=data.dispenser_code
   )
 
@@ -87,12 +85,12 @@ async def change_passsword(
   if inspect_duration(datetime.utcnow(), user.date_modified, 7):
     raise HTTPException(status_code=403, detail='Password can only be changed after 7 days.')
   
-  if user.user_password != data.current_password:
+  if verify_password(data.current_password, user.user_password):
     raise HTTPException(status_code=403, detail='Incorrect password.')
   
   if not validate_password(data.new_password):
     raise HTTPException(status_code=400, detail='Password must be at least 6 characters long and include uppercase, lowercase, numbers, and special characters.')
   
-  user.user_password = data.new_password
+  user.user_password = hash_password(data.new_password)
   db.commit()
   return {'message': 'Password updated successfully'}

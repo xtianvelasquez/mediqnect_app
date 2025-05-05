@@ -1,11 +1,13 @@
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta
+from passlib.context import CryptContext
 import jwt, re
 
 from app.core import secret_key
 
 Oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
+password_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 def create_token(data: dict):
   expires = datetime.utcnow() + timedelta(days=29)  # Token expires in 29 days
@@ -35,3 +37,9 @@ def verify_token(token: str = Depends(Oauth2_scheme)):
 def validate_password(password: str):
   pattern = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$'
   return bool(re.match(pattern, password))
+
+def hash_password(password: str):
+  return password_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str):
+  return bool(password_context.verify(plain_password, hashed_password))
