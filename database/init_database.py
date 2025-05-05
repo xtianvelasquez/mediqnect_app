@@ -1,10 +1,10 @@
 from . import session
-from .base import Base
+from . import Base
 from ..enums import (
-    form_initializer,
-    dose_initializer,
-    status_initializer,
-    compartment_initializer
+  form_initializer,
+  dose_initializer,
+  status_initializer,
+  compartment_initializer
 )
 
 def init_db():

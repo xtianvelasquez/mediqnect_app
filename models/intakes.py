@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, Date, Time, ForeignKey
 from sqlalchemy.orm import relationship
-from ..database import base
+from ..database import Base
 
-class Intake_History(base.Base):
+class Intake_History(Base):
   __tablename__ = 'intake_history'
   history_id = Column(Integer, primary_key=True, autoincrement=True)
   schedule_id = Column(Integer, ForeignKey('schedule.schedule_id', ondelete='CASCADE'), nullable=False)

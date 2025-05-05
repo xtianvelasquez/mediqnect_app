@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, Date, Time, ForeignKey
 from sqlalchemy.orm import relationship
-from ..database import base
+from ..database import Base
 
-class Schedule(base.Base):
+class Schedule(Base):
   __tablename__ = 'schedule'
   schedule_id = Column(Integer, primary_key=True, autoincrement=True)
   prescription_id = Column(Integer, ForeignKey('prescription.prescription_id', ondelete='CASCADE'), nullable=False)

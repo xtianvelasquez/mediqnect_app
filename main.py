@@ -1,12 +1,12 @@
-from fastapi import FastAPI
+from fastapi import APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+router = APIRouter()
 
-app.add_middleware(
+router.add_middleware(
   CORSMiddleware,
-  allow_origins=["http://localhost:8100"],  # Ionic default
+  allow_origins=['http://localhost:8100'],  # Ionic default
   allow_credentials=True,
-  allow_methods=["*"],
-  allow_headers=["*"],
+  allow_methods=['*'],
+  allow_headers=['*'],
 )

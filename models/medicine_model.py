@@ -1,14 +1,14 @@
 from sqlalchemy import Column, Integer, String, Date, DateTime, Enum, ForeignKey, func
 from sqlalchemy.orm import relationship
-from ..database import base
+from ..database import Base
 from ..enums import Medicine_Form_Enum
 
-class Medicine_Form(base.Base):
+class Medicine_Form(Base):
   __tablename__ = 'medicine_form'
   form_id = Column(Integer, primary_key=True, autoincrement=True)
   form_name = Column(Enum(Medicine_Form_Enum, name='form_name_enum'), nullable=False)
 
-class Medicine(base.Base):
+class Medicine(Base):
   __tablename__ = 'medicine'
   medicine_id = Column(Integer, primary_key=True, autoincrement=True)
   compartment_id = Column(Integer, ForeignKey('compartment.compartment_id', ondelete='SET NULL'), nullable=True)
