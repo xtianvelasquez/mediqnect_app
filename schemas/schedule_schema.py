@@ -15,4 +15,3 @@ class Schedule_Read(Schedule_Base):
 
   class Config:
     from_attributes = True
-
