@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.models import Status_Type, Status_Value, Compartment_Set, Compartment, Medicine_Form, Dose_Component
+from app.models import Status_Type, Statuses, Compartment_Set, Compartment, Medicine_Form, Dose_Component
 from app.enums import status_enum, medicine_enum, compartments_enum
 
 # medicine
@@ -38,9 +38,9 @@ def status_initializer(db: Session):
 
     values_to_add = []
     for enum_value in value_enums:
-      existing_value = db.query(Status_Value).filter_by(value_label=enum_value, status_type_id=existing_type.type_id).first()
+      existing_value = db.query(Statuses).filter_by(value_label=enum_value, status_type_id=existing_type.type_id).first()
       if not existing_value:
-        values_to_add.append(Status_Value(value_label=enum_value, status_type_id=existing_type.type_id))
+        values_to_add.append(Statuses(value_label=enum_value, status_type_id=existing_type.type_id))
 
     if values_to_add:
       db.bulk_save_objects(values_to_add)

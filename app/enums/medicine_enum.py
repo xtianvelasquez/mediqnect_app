@@ -1,9 +1,9 @@
-from enum import Enum, auto
+from enum import Enum
 
 class Medicine_Form_Enum(str, Enum):
-  tablet = auto()
-  syrup = auto()
+  tablet = 'tablet'
+  syrup = 'syrup'
 
 class Dose_Component_Enum(str, Enum):
-  tablet = auto()
-  mililiter = auto()
+  tablet = 'tablet'
+  mililiter = 'mililiter'

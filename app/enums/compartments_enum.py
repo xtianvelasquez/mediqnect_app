@@ -1,19 +1,19 @@
 from enum import Enum, auto
 
 class Compartment_Set_Enum(str, Enum):
-  tablet = auto()
-  syrup = auto()
+  tablet = 'tablet'
+  syrup = 'syrup'
 
 class Compartment_Enum(str, Enum):
   # tablet compartment
-  a1 = auto()
-  a2 = auto()
-  a3 = auto()
+  a1 = 'a1'
+  a2 = 'a2'
+  a3 = 'a3'
 
   # syrup compartment
-  b1 = auto()
-  b2 = auto()
-  b3 = auto()
+  b1 = 'b1'
+  b2 = 'b2'
+  b3 = 'b3'
   
 # initialized
 compartment_set_to_compartment = {

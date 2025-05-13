@@ -1,58 +1,58 @@
-from enum import Enum, auto
+from enum import Enum
 
 # Enums
 class Status_Type_Enum(str, Enum):
-  medicine = auto()
-  prescription = auto()
-  schedule = auto()
-  intake = auto()
-  compartment = auto()
+  medicine = 'medicine'
+  prescription = 'prescription'
+  schedule = 'schedule'
+  intake = 'intake'
+  compartment = 'compartment'
 
-class Status_Value_Enum(str, Enum):
+class Statuses_Enum(str, Enum):
   # medicine
-  available = auto()
-  unavailable = auto()
-  expired = auto()
+  available = 'available'
+  unavailable = 'unavailable'
+  expired = 'expired'
 
   # prescription
-  ongoing = auto()
-  ended = auto()
+  ongoing = 'ongoing'
+  ended = 'ended'
 
   # schedule
-  pending = auto()
-  completed = auto()
+  pending = 'pending'
+  completed = 'completed'
 
   # intake history
-  fulfilled = auto()
-  delayed = auto()
-  missed = auto()
+  fulfilled = 'fulfilled'
+  delayed = 'delayed'
+  missed = 'missed'
 
   # compartment
-  vacant = auto()
-  occupied = auto()
+  vacant = 'vacant'
+  occupied = 'occupied'
   
 # initilized
 status_type_to_values = {
   Status_Type_Enum.medicine: [
-    Status_Value_Enum.available,
-    Status_Value_Enum.unavailable,
-    Status_Value_Enum.expired
+    Statuses_Enum.available,
+    Statuses_Enum.unavailable,
+    Statuses_Enum.expired
   ],
   Status_Type_Enum.prescription: [
-    Status_Value_Enum.ongoing,
-    Status_Value_Enum.ended
+    Statuses_Enum.ongoing,
+    Statuses_Enum.ended
   ],
   Status_Type_Enum.schedule: [
-    Status_Value_Enum.pending,
-    Status_Value_Enum.completed
+    Statuses_Enum.pending,
+    Statuses_Enum.completed
   ],
   Status_Type_Enum.intake: [
-    Status_Value_Enum.fulfilled,
-    Status_Value_Enum.delayed,
-    Status_Value_Enum.missed
+    Statuses_Enum.fulfilled,
+    Statuses_Enum.delayed,
+    Statuses_Enum.missed
   ],
   Status_Type_Enum.compartment: [
-    Status_Value_Enum.vacant,
-    Status_Value_Enum.occupied
+    Statuses_Enum.vacant,
+    Statuses_Enum.occupied
   ]
 }

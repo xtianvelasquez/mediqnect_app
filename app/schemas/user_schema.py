@@ -15,11 +15,11 @@ class User_Base(BaseModel):
   username: str
 
 class User_Create(User_Base):
-  user_password: str
+  password: str
   dispenser_code: Optional[int]
 
 class User_Login(User_Base):
-  user_password: str
+  password: str
 
 class User_Read(User_Base):
   user_id: int

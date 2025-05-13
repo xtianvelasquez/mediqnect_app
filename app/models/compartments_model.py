@@ -14,9 +14,10 @@ class Compartment_Set(Base):
 class Compartment(Base):
   __tablename__ = 'compartment'
   compartment_id = Column(Integer, primary_key=True, autoincrement=True)
-  compartment_set_id = Column(Integer, ForeignKey('compartment_set.set_id', ondelete='CASCADE'), nullable=False)
   compartment_name = Column(Enum(Compartment_Enum, name='compartment_name_enum'), nullable=False)
-  compartment_status_id = Column(Integer, ForeignKey('status_value.value_id', ondelete='SET NULL'), nullable=True)
 
-  set = relationship("Compartment_Set", back_populates="compartments")
-  medicine = relationship('Medicine', back_populates='compartment', cascade='all, delete-orphan') # medicine_model
+  set_id = Column(Integer, ForeignKey('compartment_set.set_id', ondelete='CASCADE'), nullable=False)
+  status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
+
+  set = relationship('Compartment_Set', back_populates='compartments')
+  compartment_medicine = relationship('Compartment_Medicine', back_populates='compartment', cascade='all, delete-orphan')

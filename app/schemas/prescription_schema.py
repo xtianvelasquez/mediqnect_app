@@ -5,8 +5,8 @@ from datetime import datetime, date
 class Prescription_Base(BaseModel):
   dose: int
   dose_component_id: int
-  hour_interval: int
-  start_date: date
+  interval: int
+  start_date: datetime
   end_date: date
   prescription_status_id: int
 
