@@ -6,7 +6,7 @@ from app.database.base import Base
 class Schedule(Base):
   __tablename__ = 'schedule' 
   schedule_id = Column(Integer, primary_key=True, autoincrement=True)
-  scheduled_datetime = Column(DateTime, nullable=False)
+  scheduled_datetime = Column(DateTime, nullable=False, index=True)
 
   prescription_id = Column(Integer, ForeignKey('prescription.prescription_id', ondelete='CASCADE'), nullable=False)
   user_id = Column(Integer, ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)

@@ -1,14 +1,16 @@
 from pydantic import BaseModel
-from datetime import date, time
+from typing import Optional
+from datetime import datetime
 
 # Schedule Schemas
 class Schedule_Base(BaseModel):
-  scheduled_date: date
-  scheduled_time: time
-  schedule_status_id: int
+  scheduled_datetime: datetime
+  prescription_id: int
+  user_id: int
+  status_id: Optional[int]
 
 class Schedule_Create(Schedule_Base):
-  prescription_id: int
+  pass
 
 class Schedule_Read(Schedule_Base):
   schedule_id: int

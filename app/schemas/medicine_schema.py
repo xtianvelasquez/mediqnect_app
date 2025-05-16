@@ -1,23 +1,34 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime, date
+from datetime import date
 
 # Medicine Schemas
 class Medicine_Base(BaseModel):
   medicine_name: str
-  medicine_form_id: int
   net_content: Optional[int]
   expiration_date: Optional[date]
-  medicine_status_id: int
+  form_id: int
+  status_id: Optional[int]
 
 class Medicine_Create(Medicine_Base):
-  compartment_id: int
-  user_id: int
+  pass
 
 class Medicine_Read(Medicine_Base):
   medicine_id: int
-  date_created: datetime
-  date_modified: datetime
+
+  class Config:
+    from_attributes = True
+
+class Medicine_Compartment_Base(BaseModel):
+  compartment_id: int
+  medicine_id: int
+  user_id: int
+
+class Medicine_Compartment_Create(Medicine_Compartment_Base):
+  pass
+
+class Medicine_Compartment_Read(Medicine_Compartment_Base):
+  medicine_compartment_id: int
 
   class Config:
     from_attributes = True

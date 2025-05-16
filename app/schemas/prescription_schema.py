@@ -1,22 +1,21 @@
 from pydantic import BaseModel
-from datetime import datetime, date
+from typing import Optional
+from datetime import datetime
 
 # Prescription Schemas
 class Prescription_Base(BaseModel):
-  dose: int
-  dose_component_id: int
-  interval: int
-  start_date: datetime
-  end_date: date
-  prescription_status_id: int
+  medicine_id: int
+  intake_id: int
+  user_id: int
+  status_id: Optional[int]
 
 class Prescription_Create(Prescription_Base):
-  medicine_id: int
+  pass
 
 class Prescription_Read(Prescription_Base):
   prescription_id: int
-  date_created: datetime
-  date_modified: datetime
+  created_at: datetime
+  modified_at: datetime
 
   class Config:
     from_attributes = True

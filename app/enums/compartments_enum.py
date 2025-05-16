@@ -1,8 +1,8 @@
-from enum import Enum, auto
+from enum import Enum
 
 class Compartment_Set_Enum(str, Enum):
   tablet = 'tablet'
-  syrup = 'syrup'
+  syrups = 'syrups'
 
 class Compartment_Enum(str, Enum):
   # tablet compartment
@@ -22,7 +22,7 @@ compartment_set_to_compartment = {
     Compartment_Enum.a2,
     Compartment_Enum.a3
   ],
-  Compartment_Set_Enum.syrup: [
+  Compartment_Set_Enum.syrups: [
     Compartment_Enum.b1,
     Compartment_Enum.b2,
     Compartment_Enum.b3

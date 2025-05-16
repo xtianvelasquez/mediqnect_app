@@ -1,12 +1,13 @@
 from pydantic import BaseModel
+from typing import Optional
 
 # Compartment
 class Compartment_Base(BaseModel):
   compartment_name: str
-  compartment_status_id: int
+  status_id: Optional[int]
 
 class Compartment_Create(Compartment_Base):
-  compartment_set_id: int
+  set_id: int
 
 class Compartment_Read(Compartment_Base):
   compartment_id: int

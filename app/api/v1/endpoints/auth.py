@@ -3,94 +3,105 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from app.database import get_db
-from app.core import create_token, verify_token, validate_password, hash_password, verify_password
+from app.core import create_token, verify_token, validate_password, verify_password, hash_password
+from app.crud import store_token, logout_token, get_user, get_username, authenticate_user, store_user, update_user_field
 from app.services import inspect_duration
-from app.models import User
-from app.schemas import Token_Response, User_Login, User_Create, Change_Password
+from app.models import Token, User
+from app.schemas import Token_Response, User_Auth, User_Read, User_Create, Change_Password
 
 router = APIRouter()
 
-@router.post('/token', response_model=Token_Response, status_code=200) # User login
-async def user_login(data: User_Login, db: Session = Depends(get_db)):
-  user = db.query(User).filter(User.username == data.username).first()
+@router.post('/token', response_model=Token_Response, status_code=200)
+async def user_login(data: User_Auth, db: Session = Depends(get_db)):
+  user = authenticate_user(db, data.username, data.password)
 
-  if not user or not verify_password(data.user_password, user.user_password):  
-    raise HTTPException(status_code=401, detail='Invalid username or password.')
+  token = create_token({'id': user.user_id, 'sub': user.username})
+  stored_token = store_token(db, token)
 
-  token = create_token({
-    'id': user.user_id,
-    'sub': user.username
-  })
-  
-  return {'access_token': token, 'token_type': 'bearer'}
+  return {'access_token': stored_token, 'token_type': 'bearer'}
 
-@router.post('/signup', response_model=User_Create, status_code=200)
+@router.post('/signup', status_code=201)
 async def user_signup(data: User_Create, db: Session = Depends(get_db)):
-  existing_user = db.query(User).filter(User.username == data.username).first()
+  existing_user = get_username(db, data.username)
 
   if existing_user:
     raise HTTPException(status_code=400, detail='Username already exists.')
   
-  if not validate_password(data.user_password):
+  if not validate_password(data.password):
     raise HTTPException(status_code=400, detail='Password must be at least 6 characters long and include uppercase, lowercase, numbers, and special characters.')
+  
+  stored_user = store_user(db, data.username, data.password, data.dispenser_code)
 
-  new_user = User(
-    username=data.username,
-    user_password=hash_password(data.user_password),
-    dispenser_code=data.dispenser_code
-  )
-
-  db.add(new_user)
-  db.commit()
-  db.refresh(new_user)
-
-  return new_user
+  return stored_user
 
 @router.post('/username', status_code=200)
 async def change_username(
-  data: User_Login,
+  data: User_Auth,
   token_payload = Depends(verify_token), 
   db: Session = Depends(get_db)):
 
-  user = db.query(User).filter(User.user_id == token_payload['id']).first()
-  existing_username = db.query(User).filter(User.username == data.username).first()
+  payload = token_payload['payload']
+  user = get_user(db, payload['id'])
+  existing_username = get_username(db, data.username)
   
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
 
-  if inspect_duration(datetime.utcnow(), user.date_modified, 7):
+  if inspect_duration(datetime.utcnow(), user.modified_at, 7):
     raise HTTPException(status_code=403, detail='Username can only be changed after 7 days.')
-  
-  if user.user_password != data.user_password:
-    raise HTTPException(status_code=403, detail='Incorrect password.')
-  
+
   if existing_username:
     raise HTTPException(status_code=400, detail='Username already exists.')
+  
+  if not verify_password(user.password_hash, data.password):
+    raise HTTPException(status_code=403, detail='Incorrect password.')
 
-  user.username = data.username
-  db.commit()
-  return {'message': 'Username updated successfully'}
+  new_username = update_user_field(db, user, 'username', data.username)
+
+  return new_username
 
 @router.post('/password', status_code=200)
-async def change_passsword(
+async def change_password(
   data: Change_Password,
   token_payload = Depends(verify_token),
   db: Session = Depends(get_db)):
 
-  user = db.query(User).filter(User.user_id == token_payload['id']).first()
+  payload = token_payload['payload']
+  user = get_user(db, payload['id'])
+
+  if not user:
+    raise HTTPException(status_code=404, detail='User not found.')
+
+  if inspect_duration(datetime.utcnow(), user.modified_at, 7):
+    raise HTTPException(status_code=403, detail='Password can only be changed after 7 days.')
+  
+  if not verify_password(user.password_hash, data.password):
+    raise HTTPException(status_code=403, detail='Incorrect password.')
+
+  new_password = update_user_field(db, user, 'password_hash', hash_password(data.new_password))
+
+  return new_password
+
+@router.post('/logout')
+async def logout(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
+  return logout_token(db, token_payload['raw'])
+
+@router.get('/user', response_model=User_Read, status_code=200)
+async def current_user(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
+  payload = token_payload['payload']
+  user = get_user(db, payload['id'])
 
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
   
-  if inspect_duration(datetime.utcnow(), user.date_modified, 7):
-    raise HTTPException(status_code=403, detail='Password can only be changed after 7 days.')
-  
-  if verify_password(data.current_password, user.user_password):
-    raise HTTPException(status_code=403, detail='Incorrect password.')
-  
-  if not validate_password(data.new_password):
-    raise HTTPException(status_code=400, detail='Password must be at least 6 characters long and include uppercase, lowercase, numbers, and special characters.')
-  
-  user.user_password = hash_password(data.new_password)
-  db.commit()
-  return {'message': 'Password updated successfully'}
+  return {
+    'user_id': user.user_id,
+    'username': user.username,
+    'created_at': user.created_at,
+    'modified_at': user.modified_at
+  }
+
+@router.get('/protected', status_code=200)
+async def protected_route(token_payload: dict = Depends(verify_token)):
+  payload = token_payload['payload']
+  return {'message': f'Welcome, {payload['sub']}'}

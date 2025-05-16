@@ -20,10 +20,10 @@ class Statuses_Enum(str, Enum):
 
   # schedule
   pending = 'pending'
-  completed = 'completed'
+  fulfilled = 'fulfilled'
 
   # intake history
-  fulfilled = 'fulfilled'
+  completed = 'completed'
   delayed = 'delayed'
   missed = 'missed'
 
@@ -44,10 +44,10 @@ status_type_to_values = {
   ],
   Status_Type_Enum.schedule: [
     Statuses_Enum.pending,
-    Statuses_Enum.completed
+    Statuses_Enum.fulfilled
   ],
   Status_Type_Enum.intake: [
-    Statuses_Enum.fulfilled,
+    Statuses_Enum.completed,
     Statuses_Enum.delayed,
     Statuses_Enum.missed
   ],

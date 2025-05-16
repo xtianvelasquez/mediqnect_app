@@ -38,9 +38,9 @@ def status_initializer(db: Session):
 
     values_to_add = []
     for enum_value in value_enums:
-      existing_value = db.query(Statuses).filter_by(value_label=enum_value, status_type_id=existing_type.type_id).first()
+      existing_value = db.query(Statuses).filter_by(status_name=enum_value, type_id=existing_type.type_id).first()
       if not existing_value:
-        values_to_add.append(Statuses(value_label=enum_value, status_type_id=existing_type.type_id))
+        values_to_add.append(Statuses(status_name=enum_value, type_id=existing_type.type_id))
 
     if values_to_add:
       db.bulk_save_objects(values_to_add)
@@ -62,7 +62,7 @@ def compartment_initializer(db: Session):
       if not existing_compartment:
         compartments_to_add.append(Compartment(
             compartment_name=compartment_enum,
-            compartment_set_id=existing_set.set_id
+            set_id=existing_set.set_id
         ))
             
     if compartments_to_add:

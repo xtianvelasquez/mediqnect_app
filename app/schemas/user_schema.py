@@ -1,30 +1,25 @@
 from pydantic import BaseModel
-from typing import Optional, Literal
+from typing import Optional
 from datetime import datetime
 
-class Token_Response(BaseModel):
-  access_token: str
-  token_type: Literal['bearer']
-
-# User Schemas
-class Change_Password(BaseModel):
-  new_password: str
-  current_password: str
-
+# User
 class User_Base(BaseModel):
   username: str
 
 class User_Create(User_Base):
   password: str
-  dispenser_code: Optional[int]
-
-class User_Login(User_Base):
-  password: str
+  dispenser_code: Optional[str]
 
 class User_Read(User_Base):
   user_id: int
-  date_created: datetime
-  date_modified: datetime
+  created_at: datetime
+  modified_at: datetime
 
   class Config:
     from_attributes = True
+
+class User_Auth(User_Base):
+  password: str
+
+class Change_Password(User_Auth):
+  new_password: str

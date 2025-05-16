@@ -1,0 +1,64 @@
+from fastapi import HTTPException, Response
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
+
+from app.models import Token
+from app.core.security import decode_token
+
+def store_token(db: Session, token: str):
+    try:
+      decoded_token = decode_token(token)
+    except Exception as e:
+      raise HTTPException(status_code=500, detail=f'Token decoding failed: {str(e)}')
+    
+    try:
+      issued_at = datetime.fromtimestamp(decoded_token['iat'])
+      expires_at = datetime.fromtimestamp(decoded_token['exp'])
+
+      new_token = Token(
+        token_hash=token,
+        is_active=True,
+        issued_at=issued_at,
+        expires_at=expires_at,
+        user_id=decoded_token['id']
+      )
+
+      db.add(new_token)
+      db.flush()
+      db.commit()
+
+      if not new_token:
+        raise HTTPException(status_code=500, detail='Token could not be stored.')
+      
+      return new_token.token_hash
+    
+    except SQLAlchemyError as e:
+      db.rollback()
+      raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+    
+    except Exception as e:
+      db.rollback()
+      raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+
+def logout_token(db: Session, token: str):
+  try:
+    stored_token = db.query(Token).filter(Token.token_hash == token).first()
+    
+    if not stored_token:
+      raise HTTPException(status_code=404, detail='Token not found.')
+    
+    stored_token.is_active = False
+    stored_token.revoked_at = datetime.utcnow()
+    db.commit()
+    db.refresh(stored_token)
+    
+    return Response(status_code=204)
+  
+  except SQLAlchemyError as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+  
+  except Exception as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')

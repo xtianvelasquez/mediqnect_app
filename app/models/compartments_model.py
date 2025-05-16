@@ -1,23 +1,22 @@
-from sqlalchemy import Column, Integer, Enum, ForeignKey
+from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.database.base import Base
-from app.enums import Compartment_Set_Enum, Compartment_Enum
 
 class Compartment_Set(Base):
   __tablename__ = 'compartment_set'
   set_id = Column(Integer, primary_key=True, autoincrement=True)
-  set_name = Column(Enum(Compartment_Set_Enum, name='set_name_enum'), nullable=False)
+  set_name = Column(String(10), nullable=False)
 
   compartments = relationship('Compartment', back_populates='set', cascade='all, delete-orphan')
 
 class Compartment(Base):
   __tablename__ = 'compartment'
   compartment_id = Column(Integer, primary_key=True, autoincrement=True)
-  compartment_name = Column(Enum(Compartment_Enum, name='compartment_name_enum'), nullable=False)
+  compartment_name = Column(String(10), nullable=False)
 
   set_id = Column(Integer, ForeignKey('compartment_set.set_id', ondelete='CASCADE'), nullable=False)
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 
   set = relationship('Compartment_Set', back_populates='compartments')
-  compartment_medicine = relationship('Compartment_Medicine', back_populates='compartment', cascade='all, delete-orphan')
+  medicine_compartment = relationship('Medicine_Compartment', back_populates='compartment', cascade='all, delete-orphan')
