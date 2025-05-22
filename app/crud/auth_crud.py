@@ -62,7 +62,7 @@ def store_user(db: Session, username: str, password: str, dispenser_code: str):
     db.rollback()
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
-def update_user_field(db: Session, user, field, value):
+def update_user_field(db: Session, user: str, field: str, value: str):
   try:
     setattr(user, field, value)
     db.commit()

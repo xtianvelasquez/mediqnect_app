@@ -2,6 +2,10 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
+# General Schemas
+class Common_Response(BaseModel):
+  value: str
+
 # Prescription Schemas
 class Prescription_Base(BaseModel):
   medicine_id: int

@@ -17,3 +17,4 @@ class Prescription(Base):
   intake = relationship('Intake', back_populates='prescription')
   schedules = relationship('Schedule', back_populates='prescription', cascade='all, delete-orphan')
   user = relationship('User', back_populates='prescriptions')
+  status = relationship('Statuses', back_populates='prescriptions')

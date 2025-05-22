@@ -20,3 +20,4 @@ class Intake(Base):
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 
   prescription = relationship('Prescription', back_populates='intake', cascade='all, delete-orphan')
+  status = relationship('Statuses', back_populates='intake')

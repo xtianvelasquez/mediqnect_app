@@ -8,7 +8,7 @@ class Status_Type(Base):
   type_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
   type_name = Column(String(20), nullable=False)
 
-  label = relationship('Statuses', back_populates='type', cascade='all, delete-orphan')
+  status = relationship('Statuses', back_populates='type', cascade='all, delete-orphan')
 
 class Statuses(Base):
   __tablename__ = 'statuses'
@@ -17,4 +17,10 @@ class Statuses(Base):
 
   type_id = Column(Integer, ForeignKey('status_type.type_id', ondelete='CASCADE'), nullable=False)
 
-  type = relationship('Status_Type', back_populates='label')
+  type = relationship('Status_Type', back_populates='status')
+  compartments = relationship('Compartment', back_populates='status')
+  medicine = relationship('Medicine', back_populates='status')
+  intake = relationship('Intake', back_populates='status')
+  prescriptions = relationship('Prescription', back_populates='status')
+  schedules = relationship('Schedule', back_populates='status')
+  history = relationship('Intake_History', back_populates='status')

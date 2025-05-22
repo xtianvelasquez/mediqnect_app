@@ -6,7 +6,6 @@ from app.database import get_db
 from app.core import create_token, verify_token, validate_password, verify_password, hash_password
 from app.crud import store_token, logout_token, get_user, get_username, authenticate_user, store_user, update_user_field
 from app.services import inspect_duration
-from app.models import Token, User
 from app.schemas import Token_Response, User_Auth, User_Read, User_Create, Change_Password
 
 router = APIRouter()

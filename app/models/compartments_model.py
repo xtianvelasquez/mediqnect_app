@@ -20,3 +20,4 @@ class Compartment(Base):
 
   set = relationship('Compartment_Set', back_populates='compartments')
   medicine_compartment = relationship('Medicine_Compartment', back_populates='compartment', cascade='all, delete-orphan')
+  status = relationship('Statuses', back_populates='compartments')

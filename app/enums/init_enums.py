@@ -48,6 +48,8 @@ def status_initializer(db: Session):
 
 # compartments
 def compartment_initializer(db: Session):
+  default_status = db.query(Statuses).filter_by(status_name='vacant').first()
+
   for set_enum, compartments in compartments_enum.compartment_set_to_compartment.items():
     existing_set = db.query(Compartment_Set).filter_by(set_name=set_enum).first()
     if not existing_set:
@@ -55,14 +57,15 @@ def compartment_initializer(db: Session):
       db.add(existing_set)
       db.commit()
       db.refresh(existing_set)
-        
+
     compartments_to_add = []
     for compartment_enum in compartments:
       existing_compartment = db.query(Compartment).filter_by(compartment_name=compartment_enum).first()
       if not existing_compartment:
         compartments_to_add.append(Compartment(
-            compartment_name=compartment_enum,
-            set_id=existing_set.set_id
+          set_id=existing_set.set_id,
+          compartment_name=compartment_enum,
+          status_id=default_status.status_id
         ))
             
     if compartments_to_add:

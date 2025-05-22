@@ -21,7 +21,7 @@ class Medicine_Read(Medicine_Base):
 
 class Medicine_Compartment_Base(BaseModel):
   compartment_id: int
-  medicine_id: int
+  medicine_id: Optional[int]
   user_id: int
 
 class Medicine_Compartment_Create(Medicine_Compartment_Base):

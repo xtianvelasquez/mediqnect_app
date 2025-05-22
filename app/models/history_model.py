@@ -14,3 +14,4 @@ class Intake_History(Base):
 
   schedule = relationship('Schedule', back_populates='history')
   user = relationship('User', back_populates='history')
+  status = relationship('Statuses', back_populates='history')

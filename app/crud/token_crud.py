@@ -25,8 +25,8 @@ def store_token(db: Session, token: str):
       )
 
       db.add(new_token)
-      db.flush()
       db.commit()
+      db.refresh(new_token)
 
       if not new_token:
         raise HTTPException(status_code=500, detail='Token could not be stored.')

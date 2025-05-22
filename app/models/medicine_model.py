@@ -20,6 +20,7 @@ class Medicine(Base):
 
   prescription = relationship('Prescription', back_populates='medicine', cascade='all, delete-orphan')
   medicine_compartment = relationship('Medicine_Compartment', back_populates='medicine', cascade='all, delete-orphan')
+  status = relationship('Statuses', back_populates='medicine')
 
 class Medicine_Compartment(Base):
   __tablename__ = 'medicine_compartment'

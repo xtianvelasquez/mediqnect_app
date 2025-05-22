@@ -15,3 +15,4 @@ class Schedule(Base):
   prescription = relationship('Prescription', back_populates='schedules')
   history = relationship('Intake_History', back_populates='schedule', cascade='all, delete-orphan')
   user = relationship('User', back_populates='schedules')
+  status = relationship('Statuses', back_populates='schedules')
