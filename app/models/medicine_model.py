@@ -18,7 +18,7 @@ class Medicine(Base):
   form_id = Column(Integer, ForeignKey('medicine_form.form_id', ondelete='CASCADE'), nullable=False)
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 
-  prescription = relationship('Prescription', back_populates='medicine', cascade='all, delete-orphan')
+  prescription = relationship('Prescription', back_populates='medicine')
   medicine_compartment = relationship('Medicine_Compartment', back_populates='medicine', cascade='all, delete-orphan')
   status = relationship('Statuses', back_populates='medicine')
 

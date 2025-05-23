@@ -20,7 +20,6 @@ class Statuses(Base):
   type = relationship('Status_Type', back_populates='status')
   compartments = relationship('Compartment', back_populates='status')
   medicine = relationship('Medicine', back_populates='status')
-  intake = relationship('Intake', back_populates='status')
   prescriptions = relationship('Prescription', back_populates='status')
   schedules = relationship('Schedule', back_populates='status')
   history = relationship('Intake_History', back_populates='status')

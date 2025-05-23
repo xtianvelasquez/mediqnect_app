@@ -7,9 +7,10 @@ class Intake_History_Base(BaseModel):
   intake_datetime: datetime
   schedule_id: int
   user_id: int
+  status_id: Optional[int]
 
 class Intake_History_Create(Intake_History_Base):
-  status_id: Optional[int]
+  pass
 
 class Intake_History_Read(Intake_History_Base):
   history_id: int

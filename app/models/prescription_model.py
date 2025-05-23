@@ -13,8 +13,8 @@ class Prescription(Base):
   created_at = Column(DateTime, default=func.current_timestamp())
   modified_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
 
-  medicine = relationship('Medicine', back_populates='prescription')
-  intake = relationship('Intake', back_populates='prescription')
+  medicine = relationship('Medicine', back_populates='prescription', cascade='all, delete')
+  intake = relationship('Intake', back_populates='prescription', cascade='all, delete')
   schedules = relationship('Schedule', back_populates='prescription', cascade='all, delete-orphan')
   user = relationship('User', back_populates='prescriptions')
   status = relationship('Statuses', back_populates='prescriptions')

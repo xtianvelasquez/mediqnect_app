@@ -8,10 +8,12 @@ class Schedule(Base):
   schedule_id = Column(Integer, primary_key=True, autoincrement=True)
   scheduled_datetime = Column(DateTime, nullable=False, index=True)
 
+  color_id = Column(Integer, ForeignKey('intake_color.color_id', ondelete='SET NULL'), nullable=True)
   prescription_id = Column(Integer, ForeignKey('prescription.prescription_id', ondelete='CASCADE'), nullable=False)
   user_id = Column(Integer, ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
   
+  color = relationship('Intake_Color', back_populates='schedule')
   prescription = relationship('Prescription', back_populates='schedules')
   history = relationship('Intake_History', back_populates='schedule', cascade='all, delete-orphan')
   user = relationship('User', back_populates='schedules')

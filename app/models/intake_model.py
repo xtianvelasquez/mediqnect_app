@@ -16,8 +16,16 @@ class Intake(Base):
   hour_interval = Column(Integer, nullable=False)
   dose = Column(Integer, nullable=False)
 
-  dose_component_id = Column(Integer, ForeignKey('dose_component.component_id', ondelete='CASCADE'), nullable=False) # change to component_id
-  status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
+  component_id = Column(Integer, ForeignKey('dose_component.component_id', ondelete='CASCADE'), nullable=False)
 
-  prescription = relationship('Prescription', back_populates='intake', cascade='all, delete-orphan')
-  status = relationship('Statuses', back_populates='intake')
+  prescription = relationship('Prescription', back_populates='intake')
+  color = relationship('Intake_Color', back_populates='intake', cascade='all, delete-orphan')
+
+class Intake_Color(Base):
+  __tablename__ = 'intake_color'
+  color_id = Column(Integer, primary_key=True, autoincrement=True)
+  color_name = Column(String(10), nullable=False)
+  intake_id = Column(Integer, ForeignKey('intake.intake_id', ondelete='CASCADE'), nullable=False)
+
+  intake = relationship('Intake', back_populates='color')
+  schedule = relationship('Schedule', back_populates='color')

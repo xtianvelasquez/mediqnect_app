@@ -12,10 +12,10 @@ class Intake_Base(BaseModel):
   end_date: date
   hour_interval: int
   dose: int
-  dose_component_id: int # change to component_id
+  component_id: int
 
 class Intake_Create(Intake_Base):
-  status_id: Optional[int]
+  pass
 
 class Intake_Read(Intake_Base):
   intake_id: int

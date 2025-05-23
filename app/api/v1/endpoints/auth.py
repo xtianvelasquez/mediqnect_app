@@ -93,12 +93,12 @@ async def current_user(token_payload = Depends(verify_token), db: Session = Depe
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
   
-  return [{
+  return {
     'user_id': user.user_id,
     'username': user.username,
     'created_at': user.created_at,
     'modified_at': user.modified_at
-  }]
+  }
 
 @router.get('/protected', status_code=200)
 async def protected_route(token_payload: dict = Depends(verify_token)):

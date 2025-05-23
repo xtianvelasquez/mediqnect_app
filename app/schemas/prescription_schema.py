@@ -7,9 +7,10 @@ class Prescription_Base(BaseModel):
   medicine_id: int
   intake_id: int
   user_id: int
+  status_id: Optional[int]
 
 class Prescription_Create(Prescription_Base):
-  status_id: Optional[int]
+  pass
 
 class Prescription_Read(Prescription_Base):
   prescription_id: int

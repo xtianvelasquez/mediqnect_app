@@ -12,9 +12,10 @@ class Medicine_Base(BaseModel):
   net_content: Optional[int]
   expiration_date: Optional[date]
   form_id: int
+  status_id: Optional[int]
 
 class Medicine_Create(Medicine_Base):
-  status_id: Optional[int]
+  pass
 
 class Medicine_Read(Medicine_Base):
   medicine_id: int

@@ -1,7 +1,17 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from app.models import Compartment, Medicine_Form, Dose_Component
+from app.models import Compartment, Medicine_Form, Dose_Component, Statuses
+
+def get_specific_status(db: Session, status):
+  try:
+    return db.query(Statuses).filter(Statuses.status_name == status).first()
+
+  except SQLAlchemyError as e:
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
 def get_medicine_form(db: Session):
   try:
