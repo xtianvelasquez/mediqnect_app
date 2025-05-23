@@ -17,7 +17,7 @@ async def user_login(data: User_Auth, db: Session = Depends(get_db)):
   token = create_token({'id': user.user_id, 'sub': user.username})
   stored_token = store_token(db, token)
 
-  return {'access_token': stored_token, 'token_type': 'bearer'}
+  return {'access_token': stored_token, 'token_type': 'Bearer'}
 
 @router.post('/signup', status_code=201)
 async def user_signup(data: User_Create, db: Session = Depends(get_db)):
@@ -81,7 +81,7 @@ async def change_password(
 
   return new_password
 
-@router.post('/logout')
+@router.post('/logout', status_code=204)
 async def logout(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
   return logout_token(db, token_payload['raw'])
 
@@ -93,12 +93,12 @@ async def current_user(token_payload = Depends(verify_token), db: Session = Depe
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
   
-  return {
+  return [{
     'user_id': user.user_id,
     'username': user.username,
     'created_at': user.created_at,
     'modified_at': user.modified_at
-  }
+  }]
 
 @router.get('/protected', status_code=200)
 async def protected_route(token_payload: dict = Depends(verify_token)):

@@ -13,4 +13,4 @@ class Token_Base(BaseModel):
 
 class Token_Response(BaseModel):
   access_token: str
-  token_type: Literal['bearer']
+  token_type: Literal['Bearer']

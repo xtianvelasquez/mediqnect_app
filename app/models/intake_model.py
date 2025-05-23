@@ -16,7 +16,7 @@ class Intake(Base):
   hour_interval = Column(Integer, nullable=False)
   dose = Column(Integer, nullable=False)
 
-  dose_component_id = Column(Integer, ForeignKey('dose_component.component_id', ondelete='CASCADE'), nullable=False)
+  dose_component_id = Column(Integer, ForeignKey('dose_component.component_id', ondelete='CASCADE'), nullable=False) # change to component_id
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 
   prescription = relationship('Prescription', back_populates='intake', cascade='all, delete-orphan')

@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Response
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
@@ -53,7 +53,7 @@ def logout_token(db: Session, token: str):
     db.commit()
     db.refresh(stored_token)
     
-    return Response(status_code=204)
+    return {'message': 'Logout successfully!'}
   
   except SQLAlchemyError as e:
     db.rollback()
