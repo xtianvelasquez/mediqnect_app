@@ -13,13 +13,12 @@ class Status_Type(Base):
 class Statuses(Base):
   __tablename__ = 'statuses'
   status_id = Column(Integer, primary_key=True, autoincrement=True)
+  type_id = Column(Integer, ForeignKey('status_type.type_id', ondelete='CASCADE'), nullable=False)
   status_name = Column(String(20), nullable=False, index=True)
 
-  type_id = Column(Integer, ForeignKey('status_type.type_id', ondelete='CASCADE'), nullable=False)
-
   type = relationship('Status_Type', back_populates='status')
-  compartments = relationship('Compartment', back_populates='status')
+  compartment = relationship('Compartment', back_populates='status')
   medicine = relationship('Medicine', back_populates='status')
-  prescriptions = relationship('Prescription', back_populates='status')
-  schedules = relationship('Schedule', back_populates='status')
+  intake = relationship('Intake', back_populates='status')
+  schedule = relationship('Schedule', back_populates='status')
   history = relationship('Intake_History', back_populates='status')

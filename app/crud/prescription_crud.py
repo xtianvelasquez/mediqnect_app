@@ -3,10 +3,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException
 
-from app.models import Medicine, Medicine_Compartment, Intake, Prescription, Compartment
+from app.models import Medicine, Medicine_Compartment, Intake, Intake_Color, Prescription, Compartment
 
 def store_prescription(
     db: Session,
+    color,
     medicine_data,
     medicine_compartment_data,
     intake_data,
@@ -29,6 +30,15 @@ def store_prescription(
     db.add(intake_table)
     db.flush()
     db.refresh(intake_table)
+
+    # Insert into intake color table
+    color_table = Intake_Color(
+      color_name=color.color_name,
+      intake_id=intake_table.intake_id
+    )
+    db.add(color_table)
+    db.flush()
+    db.refresh(color_table)
 
     # Insert into prescription table
     prescription_table = Prescription(

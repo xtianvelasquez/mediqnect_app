@@ -1,12 +1,20 @@
 from pydantic import BaseModel
-from typing import Optional
 from datetime import date, datetime
 
+# Intake
 class Component_Base(BaseModel):
   component_id: int
   component_name: str
 
-# Intake Schemas
+class Color_Base(BaseModel):
+  color_name: str
+
+class Color_Read(Color_Base):
+  color_id: int
+
+  class Config:
+    from_attributes = True
+
 class Intake_Base(BaseModel):
   start_datetime: datetime
   end_date: date

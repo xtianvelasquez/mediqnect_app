@@ -4,9 +4,9 @@ from datetime import datetime
 
 # Schedule Schemas
 class Schedule_Base(BaseModel):
-  scheduled_datetime: datetime
-  prescription_id: int
   user_id: int
+  scheduled_datetime: datetime
+  intake_id: int
   status_id: Optional[int]
 
 class Schedule_Create(Schedule_Base):

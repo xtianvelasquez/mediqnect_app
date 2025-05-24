@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from app.database import get_db
+from app.database.session import get_db
 from app.core import create_token, verify_token, validate_password, verify_password, hash_password
 from app.crud import store_token, logout_token, get_user, get_username, authenticate_user, store_user, update_user_field
 from app.services import inspect_duration
@@ -41,13 +41,14 @@ async def change_username(
 
   payload = token_payload['payload']
   user = get_user(db, payload['id'])
-  existing_username = get_username(db, data.username)
   
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
 
   if inspect_duration(datetime.utcnow(), user.modified_at, 7):
     raise HTTPException(status_code=403, detail='Username can only be changed after 7 days.')
+
+  existing_username = get_username(db, data.username)
 
   if existing_username:
     raise HTTPException(status_code=400, detail='Username already exists.')

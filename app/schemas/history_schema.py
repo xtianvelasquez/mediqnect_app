@@ -2,11 +2,11 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
-# Intake Schemas
+# Intake History
 class Intake_History_Base(BaseModel):
-  intake_datetime: datetime
-  schedule_id: int
   user_id: int
+  schedule_id: int
+  intake_datetime: datetime
   status_id: Optional[int]
 
 class Intake_History_Create(Intake_History_Base):

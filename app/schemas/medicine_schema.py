@@ -2,16 +2,16 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import date
 
+# Medicine
 class Form_Base(BaseModel):
   form_id: int
   form_name: str
 
-# Medicine Schemas
 class Medicine_Base(BaseModel):
   medicine_name: str
+  form_id: int
   net_content: Optional[int]
   expiration_date: Optional[date]
-  form_id: int
   status_id: Optional[int]
 
 class Medicine_Create(Medicine_Base):

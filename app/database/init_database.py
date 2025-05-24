@@ -1,5 +1,5 @@
 from app.database import session
-from app.database import Base
+from app.database.base import Base
 from app.enums import (
   form_initializer,
   dose_initializer,

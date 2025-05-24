@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.database import get_db
+from app.database.session import get_db
 from app.crud import get_medicine_form, get_dose_component, get_tablet_compartments, get_syrups_compartments
 from app.schemas import Form_Base, Component_Base, Compartment_Read
 
