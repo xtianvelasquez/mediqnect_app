@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Date, DateTime, ForeignKey, func
+from sqlalchemy import Column, String, text, Integer, Date, DateTime, Boolean, ForeignKey, func
 from sqlalchemy.orm import relationship
 
 from app.database.base import Base
@@ -13,7 +13,7 @@ class Dose_Component(Base):
 class Color(Base):
   __tablename__ = 'color'
   color_id = Column(Integer, primary_key=True, autoincrement=True)
-  color_name = Column(String(20), nullable=False)
+  color_name = Column(String(20), nullable=False, index=True)
 
   intake = relationship('Intake', back_populates='color')
 
@@ -28,6 +28,7 @@ class Intake(Base):
   dose = Column(Integer, nullable=False)
   component_id = Column(Integer, ForeignKey('dose_component.component_id', ondelete='CASCADE'), nullable=False)
   color_id = Column(Integer, ForeignKey('color.color_id', ondelete='SET NULL'), nullable=True)
+  is_scheduled = Column(Boolean, default=False, server_default=text('false'))
   created_at = Column(DateTime, default=func.current_timestamp())
   modified_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)

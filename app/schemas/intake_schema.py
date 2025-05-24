@@ -29,6 +29,7 @@ class Intake_Create(Intake_Base):
 class Intake_Read(Intake_Base):
   intake_id: int
   user_id: int
+  is_scheduled: bool
   created_at: datetime
   modified_at: datetime
   status_name: str

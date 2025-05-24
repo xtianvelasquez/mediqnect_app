@@ -7,39 +7,38 @@ from app.models import Token
 from app.core.security import decode_token
 
 def store_token(db: Session, token: str):
-    try:
-      decoded_token = decode_token(token)
-    except Exception as e:
-      raise HTTPException(status_code=500, detail=f'Token decoding failed: {str(e)}')
-    
-    try:
-      issued_at = datetime.fromtimestamp(decoded_token['iat'])
-      expires_at = datetime.fromtimestamp(decoded_token['exp'])
+  try:
+    decoded_token = decode_token(token)
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=f'Token decoding failed: {str(e)}')
+  
+  try:
+    issued_at = datetime.fromtimestamp(decoded_token['iat'])
+    expires_at = datetime.fromtimestamp(decoded_token['exp'])
 
-      new_token = Token(
-        token_hash=token,
-        is_active=True,
-        issued_at=issued_at,
-        expires_at=expires_at,
-        user_id=decoded_token['id']
-      )
+    new_token = Token(
+      token_hash=token,
+      issued_at=issued_at,
+      expires_at=expires_at,
+      user_id=decoded_token['id']
+    )
 
-      db.add(new_token)
-      db.commit()
-      db.refresh(new_token)
+    db.add(new_token)
+    db.commit()
+    db.refresh(new_token)
 
-      if not new_token:
-        raise HTTPException(status_code=500, detail='Token could not be stored.')
-      
-      return new_token.token_hash
+    if not new_token:
+      raise HTTPException(status_code=500, detail='Token could not be stored.')
     
-    except SQLAlchemyError as e:
-      db.rollback()
-      raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
-    
-    except Exception as e:
-      db.rollback()
-      raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+    return new_token.token_hash
+  
+  except SQLAlchemyError as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+  
+  except Exception as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
 def logout_token(db: Session, token: str):
   try:

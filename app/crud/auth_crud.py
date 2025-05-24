@@ -46,8 +46,8 @@ def store_user(db: Session, username: str, password: str, dispenser_code: str):
       dispenser_code=dispenser_code
     )
     db.add(new_user)
-    db.flush()
     db.commit()
+    db.refresh(new_user)
 
     if not new_user:
       raise HTTPException(status_code=500, detail='User could not be stored.')
