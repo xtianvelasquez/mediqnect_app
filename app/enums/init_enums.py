@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 
 from app.models import Status_Type, Statuses, Compartment_Set, Compartment, Medicine_Form, Dose_Component
-from app.enums import status_enum, medicine_enum, compartments_enum
+from app.enums import status_type_to_values, compartment_set_to_compartment, Medicine_Form_Enum, Dose_Component_Enum
 
 # medicine
 def form_initializer(db: Session):
   forms_to_add = []
-  for form_enum in medicine_enum.Medicine_Form_Enum:
+  for form_enum in Medicine_Form_Enum:
     existing_form = db.query(Medicine_Form).filter_by(form_name=form_enum).first()
     if not existing_form:
       forms_to_add.append(Medicine_Form(form_name=form_enum))
@@ -17,7 +17,7 @@ def form_initializer(db: Session):
 
 def dose_initializer(db: Session):
   doses_to_add = []
-  for dose_enum in medicine_enum.Dose_Component_Enum:
+  for dose_enum in Dose_Component_Enum:
     existing_dose = db.query(Dose_Component).filter_by(component_name=dose_enum).first()
     if not existing_dose:
       doses_to_add.append(Dose_Component(component_name=dose_enum))
@@ -28,7 +28,7 @@ def dose_initializer(db: Session):
 
 # status
 def status_initializer(db: Session):
-  for type_enum, value_enums in status_enum.status_type_to_values.items():
+  for type_enum, value_enums in status_type_to_values.items():
     existing_type = db.query(Status_Type).filter_by(type_name=type_enum).first()
     if not existing_type:
       existing_type = Status_Type(type_name=type_enum)
@@ -50,7 +50,7 @@ def status_initializer(db: Session):
 def compartment_initializer(db: Session):
   default_status = db.query(Statuses).filter_by(status_name='vacant').first()
 
-  for set_enum, compartments in compartments_enum.compartment_set_to_compartment.items():
+  for set_enum, compartments in compartment_set_to_compartment.items():
     existing_set = db.query(Compartment_Set).filter_by(set_name=set_enum).first()
     if not existing_set:
       existing_set = Compartment_Set(set_name=set_enum)
