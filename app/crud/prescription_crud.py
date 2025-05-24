@@ -1,26 +1,20 @@
-from fastapi import Response
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException
 
-from app.models import Medicine, Medicine_Compartment, Intake, Intake_Color, Prescription, Compartment
+from app.models import Medicine, Medicine_Compartment, Intake, Color
 
 def store_prescription(
     db: Session,
-    color,
+    color_data,
     medicine_data,
     medicine_compartment_data,
     intake_data,
-    user_id: int,
-    medicine_default_status: int,
-    prescription_default_status: int):
+    user_id: int):
   
   try:
     # Insert into medicine table
-    medicine_dict = medicine_data.dict()
-    medicine_dict['status_id'] = medicine_default_status
-
-    medicine_table = Medicine(**medicine_dict)
+    medicine_table = Medicine(**medicine_data.dict())
     db.add(medicine_table)
     db.flush()
     db.refresh(medicine_table)
@@ -31,29 +25,19 @@ def store_prescription(
     db.flush()
     db.refresh(intake_table)
 
-    # Insert into intake color table
-    color_table = Intake_Color(
-      color_name=color.color_name,
-      intake_id=intake_table.intake_id
+    # Insert into color table
+    color_table = Color(
+      color_name=color_data.color_name
     )
     db.add(color_table)
     db.flush()
     db.refresh(color_table)
 
-    # Insert into prescription table
-    prescription_table = Prescription(
-      medicine_id=medicine_table.medicine_id,
-      intake_id=intake_table.intake_id,
-      user_id=user_id,
-      status_id=prescription_default_status
-    )
-    db.add(prescription_table)
-
     # Insert into medicine_compartment table
     medicine_compartment_table = Medicine_Compartment(
+      user_id=user_id,
       compartment_id=medicine_compartment_data.compartment_id,
-      medicine_id=medicine_table.medicine_id,
-      user_id=user_id
+      medicine_id=medicine_table.medicine_id
     )
     db.add(medicine_compartment_table)
 

@@ -13,7 +13,7 @@ class Medicine_Form(Base):
 class Medicine(Base):
   __tablename__ = 'medicine'
   medicine_id = Column(Integer, primary_key=True, autoincrement=True)
-  user_id = Column(Integer, ForeignKey('user.user_id'), ondelete='CASCADE')
+  user_id = Column(Integer, ForeignKey('user.user_id', ondelete='CASCADE'))
   medicine_name = Column(String(50), nullable=False)
   form_id = Column(Integer, ForeignKey('medicine_form.form_id', ondelete='CASCADE'), nullable=False)
   net_content = Column(Integer)

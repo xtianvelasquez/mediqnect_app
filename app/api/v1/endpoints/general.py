@@ -25,12 +25,22 @@ def dose_component(db: Session = Depends(get_db)):
 @router.get('/compartments', response_model=List[Compartment_Read], status_code=200)
 def compartments(db: Session = Depends(get_db)):
   tablet_data = [
-    {'compartment_name': compartment.compartment_name, 'status_name': compartment.status.status_name, 'set_name': compartment.set.set_name, 'compartment_id': compartment.compartment_id}
+    {'compartment_name': compartment.compartment_name,
+     'status_id': compartment.status_id,
+     'status_name': compartment.status.status_name,
+     'set_name': compartment.set.set_name,
+     'compartment_id': compartment.compartment_id}
+
     for compartment in get_tablet_compartments(db)
   ]
 
   syrups_data = [
-    {'compartment_name': compartment.compartment_name, 'status_name': compartment.status.status_name, 'set_name': compartment.set.set_name, 'compartment_id': compartment.compartment_id}
+    {'compartment_name': compartment.compartment_name,
+     'status_id': compartment.status_id,
+     'status_name': compartment.status.status_name,
+     'set_name': compartment.set.set_name,
+     'compartment_id': compartment.compartment_id}
+     
     for compartment in get_syrups_compartments(db)
   ]
   

@@ -10,9 +10,9 @@ class Compartment_Create(Compartment_Base):
   set_id: int
 
 class Compartment_Read(Compartment_Base):
-  compartment_id: int
-  set_name: str
   status_name: str
+  set_name: str
+  compartment_id: int
 
   class Config:
     from_attributes = True

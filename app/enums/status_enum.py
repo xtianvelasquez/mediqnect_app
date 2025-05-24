@@ -2,10 +2,11 @@ from enum import Enum
 
 # Enums
 class Status_Type_Enum(str, Enum):
+  compartment = 'compartment'
   medicine = 'medicine'
   intake = 'intake'
   schedule = 'schedule'
-  compartment = 'compartment'
+  history = 'history'
 
 class Statuses_Enum(str, Enum):
   # compartment
@@ -49,7 +50,7 @@ status_type_to_values = {
     Statuses_Enum.ongoing,
     Statuses_Enum.ended
   ],
-  Status_Type_Enum.intake: [
+  Status_Type_Enum.history: [
     Statuses_Enum.completed,
     Statuses_Enum.late,
     Statuses_Enum.missed

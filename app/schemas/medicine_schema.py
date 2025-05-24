@@ -27,11 +27,12 @@ class Medicine_Compartment_Base(BaseModel):
   compartment_id: int
 
 class Medicine_Compartment_Create(Medicine_Compartment_Base):
-  medicine_id: int
-  user_id: int
+  pass
 
 class Medicine_Compartment_Read(Medicine_Compartment_Create):
   medicine_compartment_id: int
+  user_id: int
+  medicine_id: int
 
   class Config:
     from_attributes = True

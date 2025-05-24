@@ -21,6 +21,7 @@ class Intake(Base):
   __tablename__ = 'intake'
   intake_id = Column(Integer, primary_key=True, autoincrement=True)
   user_id = Column(Integer, ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)
+  medicine_id = Column(Integer, ForeignKey('medicine.medicine_id', ondelete='CASCADE'), nullable=False)
   start_datetime = Column(DateTime, nullable=False)
   end_date = Column(Date, nullable=False)
   hour_interval = Column(Integer, nullable=False)
@@ -34,5 +35,6 @@ class Intake(Base):
   user = relationship('User', back_populates='intake')
   medicine = relationship('Medicine', back_populates='intake')
   component = relationship('Dose_Component', back_populates='intake')
-  color = relationship('Intake_Color', back_populates='intake')
+  color = relationship('Color', back_populates='intake')
   schedule = relationship('Schedule', back_populates='intake', cascade='all, delete-orphan')
+  status = relationship('Statuses', back_populates='intake')
