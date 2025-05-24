@@ -2,18 +2,18 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
-# Schedule Schemas
+# Schedule
 class Schedule_Base(BaseModel):
   user_id: int
-  scheduled_datetime: datetime
   intake_id: int
-  status_id: Optional[int]
+  scheduled_datetime: datetime
 
 class Schedule_Create(Schedule_Base):
-  pass
+  status_id: int
 
 class Schedule_Read(Schedule_Base):
   schedule_id: int
+  status_name: str
 
   class Config:
     from_attributes = True

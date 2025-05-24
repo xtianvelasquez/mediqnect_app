@@ -23,10 +23,15 @@ class Intake_Base(BaseModel):
   component_id: int
 
 class Intake_Create(Intake_Base):
-  pass
+  user_id: int
+  status_id: int
 
 class Intake_Read(Intake_Base):
   intake_id: int
+  user_id: int
+  created_at: datetime
+  modified_at: datetime
+  status_name: str
 
   class Config:
     from_attributes = True
