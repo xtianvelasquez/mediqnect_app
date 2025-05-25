@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, text, Integer, DateTime, Boolean, ForeignKey, func
+from sqlalchemy import Column, String, text, Integer, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -25,7 +25,7 @@ class Intake(Base):
   user_id = Column(Integer, ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)
   medicine_id = Column(Integer, ForeignKey('medicine.medicine_id', ondelete='CASCADE'), nullable=False)
   start_datetime = Column(DateTime(timezone=True), nullable=False)
-  end_date = Column(DateTime(timezone=True), nullable=False)
+  end_datetime = Column(DateTime(timezone=True), nullable=False)
   hour_interval = Column(Integer, nullable=False)
   dose = Column(Integer, nullable=False)
   component_id = Column(Integer, ForeignKey('dose_component.component_id', ondelete='CASCADE'), nullable=False)

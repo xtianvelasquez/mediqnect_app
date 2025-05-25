@@ -27,7 +27,7 @@ async def add_prescription(
     raise HTTPException(status_code=404, detail='User not found.')
   
   start = intake.start_datetime
-  end = intake.end_date
+  end = intake.end_datetime
   now = datetime.now(ZoneInfo('UTC'))
 
   if start < now or end.date() < now.date():

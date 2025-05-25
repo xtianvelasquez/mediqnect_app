@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import Compartment, Medicine_Form, Dose_Component, Statuses
 
-def get_specific_status(db: Session, status):
+def get_specific_status(db: Session, status: str):
   try:
     return db.query(Statuses).filter(Statuses.status_name == status).first()
 

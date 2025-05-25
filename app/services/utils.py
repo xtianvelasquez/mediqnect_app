@@ -9,7 +9,7 @@ def convert_to_datetime(d: date) -> datetime:
 
 def convert_to_utc(dt: datetime) -> datetime:
   if dt.tzinfo is None or dt.utcoffset() is None:
-    raise ValueError('Datetime must be timezone-aware')
+    raise ValueError(f'Datetime must be timezone-aware. Got: {dt}')
 
   return dt.astimezone(ZoneInfo('UTC'))
 
