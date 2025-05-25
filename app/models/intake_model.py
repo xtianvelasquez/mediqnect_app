@@ -1,5 +1,7 @@
-from sqlalchemy import Column, String, text, Integer, Date, DateTime, Boolean, ForeignKey, func
+from sqlalchemy import Column, String, text, Integer, DateTime, Boolean, ForeignKey, func
 from sqlalchemy.orm import relationship
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from app.database.base import Base
 
@@ -22,15 +24,15 @@ class Intake(Base):
   intake_id = Column(Integer, primary_key=True, autoincrement=True)
   user_id = Column(Integer, ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)
   medicine_id = Column(Integer, ForeignKey('medicine.medicine_id', ondelete='CASCADE'), nullable=False)
-  start_datetime = Column(DateTime, nullable=False)
-  end_date = Column(Date, nullable=False)
+  start_datetime = Column(DateTime(timezone=True), nullable=False)
+  end_date = Column(DateTime(timezone=True), nullable=False)
   hour_interval = Column(Integer, nullable=False)
   dose = Column(Integer, nullable=False)
   component_id = Column(Integer, ForeignKey('dose_component.component_id', ondelete='CASCADE'), nullable=False)
   color_id = Column(Integer, ForeignKey('color.color_id', ondelete='SET NULL'), nullable=True)
   is_scheduled = Column(Boolean, default=False, server_default=text('false'))
-  created_at = Column(DateTime, default=func.current_timestamp())
-  modified_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
+  created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')))
+  modified_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')), onupdate=lambda: datetime.now(ZoneInfo('UTC')))
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 
   user = relationship('User', back_populates='intake')

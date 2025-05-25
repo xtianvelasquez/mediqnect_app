@@ -77,6 +77,9 @@ async def change_password(
   
   if not verify_password(user.password_hash, data.password):
     raise HTTPException(status_code=403, detail='Incorrect password.')
+  
+  if verify_password(user.password_hash, data.new_password):
+    raise HTTPException(status_code=403, detail='The password you entered is the same as your current password. Please choose a new one to ensure the security of your account.')
 
   new_password = update_user_field(db, user, 'password_hash', hash_password(data.new_password))
 
@@ -102,6 +105,6 @@ async def current_user(token_payload = Depends(verify_token), db: Session = Depe
   }
 
 @router.get('/protected', status_code=200)
-async def protected_route(token_payload: dict = Depends(verify_token)):
+async def protected_route(token_payload = Depends(verify_token)):
   payload = token_payload['payload']
   return {'message': f'Welcome, {payload['sub']}'}

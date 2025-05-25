@@ -1,9 +1,12 @@
 from fastapi import APIRouter, HTTPException, Body, Depends
 from sqlalchemy.orm import Session
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 from app.database.session import get_db
 from app.core import verify_token
 from app.crud import get_user, store_prescription
+from app.services import inspect_duration
 from app.schemas import Color_Base, Medicine_Base, Medicine_Compartment_Base, Intake_Base
 
 router = APIRouter()
@@ -22,6 +25,22 @@ async def add_prescription(
 
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
+  
+  start = intake.start_datetime
+  end = intake.end_date
+  now = datetime.now(ZoneInfo('UTC'))
+
+  if start < now or end.date() < now.date():
+    raise HTTPException(status_code=404, detail='Start or end datetime cannot be in the past.')
+  
+  if inspect_duration(start.date(), end.date(), 1):
+    raise HTTPException(status_code=404, detail='Start datetime must be before end datetime.')
+
+  if start.date() == now.date() and start.time() < now.time():
+    raise HTTPException(status_code=404, detail='Start time must be in the future.')
+
+  if not inspect_duration(start.date(), end.date(), 20):
+    raise HTTPException(status_code=404, detail='The duration between start and end is too long. Maximum schedule duration is 20 days.')
   
   stored_prescription = store_prescription(
     db,

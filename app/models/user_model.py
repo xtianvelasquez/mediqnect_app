@@ -1,5 +1,7 @@
 from sqlalchemy import Column, String, Integer, DateTime, func
 from sqlalchemy.orm import relationship
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from app.database.base import Base
 
@@ -9,8 +11,8 @@ class User(Base):
   username = Column(String(50), unique=True, nullable=False, index=True)
   password_hash = Column(String(255), nullable=False)
   dispenser_code = Column(String(20), unique=True)
-  created_at = Column(DateTime, default=func.current_timestamp())
-  modified_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
+  created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')))
+  modified_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')), onupdate=lambda: datetime.now(ZoneInfo('UTC')))
 
   token = relationship('Token', back_populates='user', uselist=False)
   medicine = relationship('Medicine', back_populates='user', cascade='all, delete-orphan')

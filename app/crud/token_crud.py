@@ -2,8 +2,10 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from app.models import Token
+from app.services import convert_to_utc
 from app.core.security import decode_token
 
 def store_token(db: Session, token: str):
@@ -18,8 +20,8 @@ def store_token(db: Session, token: str):
 
     new_token = Token(
       token_hash=token,
-      issued_at=issued_at,
-      expires_at=expires_at,
+      issued_at=convert_to_utc(issued_at),
+      expires_at=convert_to_utc(expires_at),
       user_id=decoded_token['id']
     )
 
@@ -47,8 +49,8 @@ def logout_token(db: Session, token: str):
     if not stored_token:
       raise HTTPException(status_code=404, detail='Token not found.')
     
-    stored_token.is_active = False
-    stored_token.revoked_at = datetime.utcnow()
+    stored_token.is_active=False
+    stored_token.revoked_at=datetime.now(ZoneInfo('UTC'))
     db.commit()
     db.refresh(stored_token)
     

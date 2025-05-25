@@ -1,27 +1,18 @@
-from datetime import date, datetime, timedelta
-from app.models import Schedule
+from datetime import date, time, datetime, timedelta
+from zoneinfo import ZoneInfo
+
+def convert_to_datetime(d: date) -> datetime:
+  if isinstance(d, datetime):
+    return d  # already datetime
+  if isinstance(d, date):
+    return datetime.combine(d, time(hour=23, minute=59, second=0)).replace(tzinfo=ZoneInfo('UTC'))
+
+def convert_to_utc(dt: datetime) -> datetime:
+  if dt.tzinfo is None or dt.utcoffset() is None:
+    raise ValueError('Datetime must be timezone-aware')
+
+  return dt.astimezone(ZoneInfo('UTC'))
 
 def inspect_duration(start, end, interval):
   result = (end - start) < timedelta(days=interval)
   return result
-
-def generate_schedules(intake):
-  start = intake.start_datetime
-  end = intake.end_date
-  interval = intake.hour_interval
-
-  schedules = []
-  first = start
-
-  while first.date() <= end:
-    schedule = Schedule(
-      user_id=intake.user_id,
-      intake_id=intake.intake_id,
-      scheduled_datetime=first,
-      status_id=8 # ongoing
-    )
-
-    schedules.append(schedule)
-    first += timedelta(hours=interval)
-
-  return schedules

@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from app.database.base import Base
 
@@ -8,8 +10,8 @@ class Intake_History(Base):
   history_id = Column(Integer, primary_key=True, autoincrement=True)
   user_id = Column(Integer, ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)
   schedule_id = Column(Integer, ForeignKey('schedule.schedule_id', ondelete='CASCADE'), nullable=False)
-  history_datetime = Column(DateTime, nullable=False, index=True)
-  modified_at = Column(DateTime, default=func.current_timestamp(), onupdate=func.current_timestamp())
+  history_datetime = Column(DateTime(timezone=True), nullable=False, index=True)
+  modified_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')), onupdate=lambda: datetime.now(ZoneInfo('UTC')))
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 
   user = relationship('User', back_populates='history')
