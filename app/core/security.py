@@ -4,6 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta
 from passlib.hash import bcrypt
 import jwt, re
+from zoneinfo import ZoneInfo
 
 from app.config import secret_key
 from app.database.session import get_db
@@ -12,8 +13,8 @@ from app.models import Token
 Oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 def create_token(data: dict):
-  expires_at = datetime.utcnow() + timedelta(days=29)  # Token expires in 29 days
-  issued_at = datetime.utcnow()
+  expires_at = datetime.now(ZoneInfo('UTC')) + timedelta(days=29)  # Token expires in 29 days
+  issued_at = datetime.now(ZoneInfo('UTC'))
 
   data.update({'iat': issued_at, 'exp': expires_at})
 

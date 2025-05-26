@@ -15,8 +15,8 @@ def store_token(db: Session, token: str):
     raise HTTPException(status_code=500, detail=f'Token decoding failed: {str(e)}')
   
   try:
-    issued_at = datetime.fromtimestamp(decoded_token['iat'])
-    expires_at = datetime.fromtimestamp(decoded_token['exp'])
+    issued_at = datetime.fromtimestamp(decoded_token['iat'], tz=ZoneInfo('UTC'))
+    expires_at = datetime.fromtimestamp(decoded_token['exp'], tz=ZoneInfo('UTC'))
 
     new_token = Token(
       token_hash=token,
