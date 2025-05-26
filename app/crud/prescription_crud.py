@@ -3,7 +3,8 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from fastapi import HTTPException
 
 from app.services import generate_schedules
-from app.models import Medicine, Medicine_Compartment, Intake, Color
+from app.models import Medicine, Medicine_Compartment, Compartment, Intake, Schedule, Color
+from app.constants import MEDICINE_STATUS, INTAKE_STATUS, COMPARTMENT_STATUS
 
 def store_prescription(
     db: Session,
@@ -29,7 +30,7 @@ def store_prescription(
       medicine_dict = medicine_data.dict()
       medicine_dict.update({
         'user_id': user_id,
-        'status_id': 3 # available
+        'status_id': MEDICINE_STATUS['AVAILABLE'] # available
       })
 
       medicine_table = Medicine(**medicine_dict)
@@ -42,7 +43,7 @@ def store_prescription(
         'user_id': user_id,
         'medicine_id': medicine_table.medicine_id,
         'color_id': color_table.color_id,
-        'status_id': 6 # pending
+        'status_id': INTAKE_STATUS['PENDING'] # pending
       })
       intake_table = Intake(**intake_dict)
       db.add(intake_table)
@@ -56,8 +57,20 @@ def store_prescription(
       )
       db.add(medicine_compartment_table)
 
-      schedules = generate_schedules(intake_table)
-      db.add_all(schedules)
+      # Check if schedules for intake are already generated
+      schedules_exist = db.query(Schedule).filter(
+        Schedule.user_id == user_id,
+        Schedule.intake_id == intake_table.intake_id
+      ).first()
+      if not schedules_exist:
+        schedules = generate_schedules(intake_table)
+        intake_table.is_scheduled = True
+        db.add_all(schedules)
+
+      # Check if compartment is already occupied
+      compartment_table = db.query(Compartment).filter(Compartment.compartment_id == medicine_compartment_table.compartment_id).first()
+      if compartment_table:
+        compartment_table.status_id = COMPARTMENT_STATUS['OCCUPIED'] # occupied
 
     # Commit changes
     try:

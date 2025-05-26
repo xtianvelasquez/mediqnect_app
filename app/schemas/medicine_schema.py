@@ -10,8 +10,8 @@ class Form_Base(BaseModel):
 class Medicine_Base(BaseModel):
   medicine_name: str
   form_id: int
-  net_content: Optional[int]
-  expiration_date: Optional[date]
+  net_content: Optional[int] | None
+  expiration_date: Optional[date] | None
 
 class Medicine_Create(Medicine_Base):
   user_id: int

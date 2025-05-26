@@ -1,5 +1,5 @@
 from app.models.status_model import Status_Type, Statuses
-from app.models.compartments_model import Compartment_Set, Compartment
+from app.models.compartment_model import Compartment_Set, Compartment
 from app.models.token_model import Token
 from app.models.user_model import User
 from app.models.intake_model import Dose_Component, Intake, Color

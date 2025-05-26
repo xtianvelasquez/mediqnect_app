@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body, Depends
 from sqlalchemy.orm import Session
-from datetime import date, datetime
+from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from app.database.session import get_db
@@ -39,8 +39,8 @@ async def add_prescription(
   if start.date() == now.date() and start.time() < now.time():
     raise HTTPException(status_code=404, detail='Start time must be in the future.')
 
-  if not inspect_duration(start.date(), end.date(), 20):
-    raise HTTPException(status_code=404, detail='The duration between start and end is too long. Maximum schedule duration is 20 days.')
+  if not inspect_duration(start.date(), end.date(), 30):
+    raise HTTPException(status_code=404, detail='The duration between start and end is too long. Maximum schedule duration is 30 days.')
   
   stored_prescription = store_prescription(
     db,

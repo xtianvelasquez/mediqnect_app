@@ -1,6 +1,7 @@
 from datetime import timedelta
 from app.models import Schedule
 from app.services import convert_to_utc
+from app.constants import SCHEDULE_STATUS
 
 def generate_schedules(intake):
   start = intake.start_datetime
@@ -15,7 +16,7 @@ def generate_schedules(intake):
       user_id=intake.user_id,
       intake_id=intake.intake_id,
       scheduled_datetime=convert_to_utc(current),
-      status_id=8 # ongoing
+      status_id=SCHEDULE_STATUS['ONGOING'] # ongoing
     )
 
     schedules.append(schedule)
