@@ -74,4 +74,4 @@ def store_prescription(
     db.rollback()
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
-  return {'message': 'Prescription details added successfully!'}
+  return {'message': 'Your prescription details have been successfully added.'}

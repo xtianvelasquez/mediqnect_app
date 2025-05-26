@@ -54,7 +54,7 @@ def logout_token(db: Session, token: str):
     db.commit()
     db.refresh(stored_token)
     
-    return {'message': 'Logout successfully!'}
+    return {'message': 'You have been logged out.'}
   
   except SQLAlchemyError as e:
     db.rollback()

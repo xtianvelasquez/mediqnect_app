@@ -28,7 +28,7 @@ def authenticate_user(db: Session, username: str, password: str):
   try:
     user = get_username(db, username)
     if not user or not verify_password(password, user.password_hash):
-      raise HTTPException(status_code=401, detail='Invalid username or password.')
+      raise HTTPException(status_code=401, detail='Invalid username or password. Please try again.')
     
     return user
   
@@ -52,7 +52,7 @@ def store_user(db: Session, username: str, password: str, dispenser_code: str):
     if not new_user:
       raise HTTPException(status_code=500, detail='User could not be stored.')
     
-    return {'message': 'Signup successfuly!'}
+    return {'message': 'Your account has been successfully created.'}
   
   except SQLAlchemyError as e:
     db.rollback()
@@ -67,7 +67,7 @@ def update_user_field(db: Session, user: str, field: str, value: str):
     setattr(user, field, value)
     db.commit()
     db.refresh(user)
-    return {'message': f'{field} updated successfully'}
+    return {'message': f'Your {field} has been changed successfully.'}
 
   except SQLAlchemyError as e:
     db.rollback()
