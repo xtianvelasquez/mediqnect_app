@@ -105,6 +105,6 @@ async def current_user(token_payload = Depends(verify_token), db: Session = Depe
   }
 
 @router.get('/protected', status_code=200)
-async def protected_route(token_payload = Depends(verify_token)):
+async def protected_route(token_payload: dict = Depends(verify_token)):
   payload = token_payload['payload']
   return {'message': f'Welcome, {payload['sub']}'}

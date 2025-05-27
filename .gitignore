@@ -1,3 +1,4 @@
 app/.env/requirements.txt
 app/models/models.py
 app/schemas/schemas.py
+app/publisher.py

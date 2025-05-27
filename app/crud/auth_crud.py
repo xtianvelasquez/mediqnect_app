@@ -4,9 +4,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.models import User
 from app.core.security import hash_password, verify_password
 
-def get_user(db: Session, _id: int):
+def get_user(db: Session, user_id: int):
   try:
-    return db.query(User).filter(User.user_id == _id).first()
+    return db.query(User).filter(User.user_id == user_id).first()
 
   except SQLAlchemyError as e:
     raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')

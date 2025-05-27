@@ -1,4 +1,61 @@
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
-from app.models import Compartment, Medicine_Form, Dose_Component, Statuses
+from apscheduler.schedulers.background import BackgroundScheduler
+import paho.mqtt.client as mqtt
+import json
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+from app.config import mqtt_credentials
+from app.database.session import SessionLocal
+from app.core import online_users
+from app.models import Medicine_Compartment, Schedule
+
+mqtt_client = mqtt.Client()
+mqtt_client.connect(mqtt_credentials['mqtt_broker'], mqtt_credentials['mqtt_port'])
+
+def check_and_send_alarms(db: Session, user_id: int):
+  now = datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0)
+  sent_alarms = []
+
+  print(f'Checking alarms for user {user_id} at {now}') # Testing
+
+  schedules = db.query(Schedule).filter(Schedule.user_id == user_id, Schedule.scheduled_datetime == now).all()
+  for schedule in schedules:
+    medicine_compartment = db.query(Medicine_Compartment).filter(Medicine_Compartment.medicine_id == schedule.intake.medicine_id).first()
+
+    if medicine_compartment:
+      mqtt_payload = {
+        'user_id': schedule.user_id,
+        'intake_id': schedule.intake_id,
+        'schedule_id': schedule.schedule_id,
+        'scheduled_datetime': schedule.scheduled_datetime,
+        'medicine_name': medicine_compartment.medicine.medicine_name,
+        'compartment_id': medicine_compartment.compartment.compartment_id
+      }
+
+      sent_alarms.append(mqtt_payload)
+      topic = f'alarm/{schedule.user_id}'
+
+      try:
+        print(f'[ALARM SENT] Published to {topic} → {mqtt_payload}')
+        mqtt_client.publish(topic, json.dumps(mqtt_payload))
+      except Exception as e:
+        print(f'MQTT error: {e}, reconnecting...')
+        mqtt_client.reconnect()
+        mqtt_client.publish(topic, json.dumps(mqtt_payload))
+
+  return sent_alarms
+
+def scheduled_alarm_task():
+  db: Session = SessionLocal()
+  users = db.query(Schedule.user_id).distinct().all()
+
+  for user in users:
+    if user.user_id not in online_users:
+      check_and_send_alarms(db, user.user_id)
+
+  db.close()
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(scheduled_alarm_task, 'interval', minutes=1)
+scheduler.start()
