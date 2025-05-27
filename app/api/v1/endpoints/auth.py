@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from app.database.session import get_db
-from app.core import create_token, verify_token, validate_password, verify_password, hash_password
+from app.core import online_users, create_token, verify_token, validate_password, verify_password, hash_password
 from app.crud import store_token, logout_token, get_user, get_username, authenticate_user, store_user, update_user_field
 from app.services import inspect_duration
 from app.schemas import Token_Response, User_Auth, User_Read, User_Create, Change_Password
@@ -87,7 +87,12 @@ async def change_password(
 
 @router.post('/logout', status_code=204)
 async def logout(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
-  return logout_token(db, token_payload['raw'])
+  payload = token_payload['payload']['id']
+  online_users.discard(payload)
+
+  logged = logout_token(db, token_payload['raw'])
+
+  return logged
 
 @router.get('/user', response_model=User_Read, status_code=200)
 async def current_user(token_payload = Depends(verify_token), db: Session = Depends(get_db)):

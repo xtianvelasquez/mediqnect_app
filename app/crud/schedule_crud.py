@@ -10,7 +10,7 @@ from app.database.session import SessionLocal
 from app.core import online_users
 from app.models import Medicine_Compartment, Schedule
 
-mqtt_client = mqtt.Client()
+mqtt_client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
 mqtt_client.connect(mqtt_credentials['mqtt_broker'], mqtt_credentials['mqtt_port'])
 
 def check_and_send_alarms(db: Session, user_id: int):
