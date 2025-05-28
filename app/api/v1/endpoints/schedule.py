@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 import asyncio, traceback
 
 from app.database.session import get_db
-from app.core import online_users, verify_token, verify_ws_token
+from app.core import online_users, verify_ws_token
 from app.crud import get_user, check_and_send_alarms
 
 router = APIRouter()
@@ -26,21 +26,17 @@ async def get_schedules(websocket: WebSocket, db: Session = Depends(get_db)):
     await websocket.close(code=1008)
     return
 
-  print(f'User {payload} connected via WebSocket')
-  
+  print(f'User {payload} connected via WebSocket!')
   user = get_user(db, payload)
 
   if not user:
     await websocket.close(code=4004)
     return
-  
-  online_users.add(payload)
 
   try:
     while True:
       alarms = check_and_send_alarms(db, payload)
       print(f'Sending alarms: {alarms}')
-      print(f'Payload: {payload}')
       print(f'Online Users: {online_users}')
       await websocket.send_json({'alarms': alarms})
       await asyncio.sleep(60)
@@ -50,6 +46,5 @@ async def get_schedules(websocket: WebSocket, db: Session = Depends(get_db)):
     traceback.print_exc()
 
   finally:
-    online_users.discard(payload)
-    print(f'User {payload} disconnected')
+    print(f'User {payload} disconnected!')
     await websocket.close()

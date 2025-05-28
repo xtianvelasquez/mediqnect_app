@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field, model_validator
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from app.services import convert_to_datetime
 
 # Intake
 class Component_Base(BaseModel):

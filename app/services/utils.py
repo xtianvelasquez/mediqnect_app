@@ -1,11 +1,13 @@
-from datetime import date, time, datetime, timedelta
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+from app.config import timezone
 
-def convert_to_datetime(d: date) -> datetime:
-  if isinstance(d, datetime):
-    return d  # already datetime
-  if isinstance(d, date):
-    return datetime.combine(d, time(hour=23, minute=59, second=0)).replace(tzinfo=ZoneInfo('UTC'))
+def convert_datetime(d: datetime) -> str:
+  utc_dt = d.replace(tzinfo=ZoneInfo('UTC'))
+  ph_dt = utc_dt.astimezone(ZoneInfo(timezone))
+  formatted_dt = ph_dt.strftime('%Y-%m-%d %I:%M %p')
+
+  return formatted_dt
 
 def convert_to_utc(dt: datetime) -> datetime:
   if dt.tzinfo is None or dt.utcoffset() is None:

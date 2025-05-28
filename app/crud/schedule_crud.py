@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 from app.config import mqtt_credentials
 from app.database.session import SessionLocal
 from app.core import online_users
+from app.services import convert_datetime
 from app.models import Medicine_Compartment, Schedule
 
 mqtt_client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
@@ -15,9 +16,9 @@ mqtt_client.connect(mqtt_credentials['mqtt_broker'], mqtt_credentials['mqtt_port
 
 def check_and_send_alarms(db: Session, user_id: int):
   now = datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0)
-  sent_alarms = []
+  print(f'Checking alarms for user {user_id} at {convert_datetime(now)}') # Testing
 
-  print(f'Checking alarms for user {user_id} at {now}') # Testing
+  sent_alarms = []
 
   schedules = db.query(Schedule).filter(Schedule.user_id == user_id, Schedule.scheduled_datetime == now).all()
   for schedule in schedules:
@@ -51,11 +52,15 @@ def scheduled_alarm_task():
   users = db.query(Schedule.user_id).distinct().all()
 
   for user in users:
-    if user.user_id not in online_users:
+    if user.user_id in online_users:
       check_and_send_alarms(db, user.user_id)
 
   db.close()
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(scheduled_alarm_task, 'interval', minutes=1)
-scheduler.start()
+
+def start_scheduler():
+  scheduler.start() if len(online_users) >= 1 else None
+
+start_scheduler

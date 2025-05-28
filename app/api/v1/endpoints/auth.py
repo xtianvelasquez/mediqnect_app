@@ -5,7 +5,7 @@ from datetime import datetime
 from app.database.session import get_db
 from app.core import online_users, create_token, verify_token, validate_password, verify_password, hash_password
 from app.crud import store_token, logout_token, get_user, get_username, authenticate_user, store_user, update_user_field
-from app.services import inspect_duration
+from app.services import convert_datetime, inspect_duration
 from app.schemas import Token_Response, User_Auth, User_Read, User_Create, Change_Password
 
 router = APIRouter()
@@ -13,9 +13,9 @@ router = APIRouter()
 @router.post('/token', response_model=Token_Response, status_code=200)
 async def user_login(data: User_Auth, db: Session = Depends(get_db)):
   user = authenticate_user(db, data.username, data.password)
-
   token = create_token({'id': user.user_id, 'sub': user.username})
   stored_token = store_token(db, token)
+  online_users.add(user.user_id)
 
   return {'access_token': stored_token, 'token_type': 'Bearer'}
 
@@ -39,8 +39,8 @@ async def change_username(
   token_payload = Depends(verify_token), 
   db: Session = Depends(get_db)):
 
-  payload = token_payload['payload']
-  user = get_user(db, payload['id'])
+  payload = token_payload.get('payload', {}).get('id')
+  user = get_user(db, payload)
   
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
@@ -66,8 +66,8 @@ async def change_password(
   token_payload = Depends(verify_token),
   db: Session = Depends(get_db)):
 
-  payload = token_payload['payload']
-  user = get_user(db, payload['id'])
+  payload = token_payload.get('payload', {}).get('id')
+  user = get_user(db, payload)
 
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
@@ -87,17 +87,16 @@ async def change_password(
 
 @router.post('/logout', status_code=204)
 async def logout(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
-  payload = token_payload['payload']['id']
+  payload = token_payload.get('payload', {}).get('id')
   online_users.discard(payload)
-
   logged = logout_token(db, token_payload['raw'])
-
+  
   return logged
 
 @router.get('/user', response_model=User_Read, status_code=200)
 async def current_user(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
-  payload = token_payload['payload']
-  user = get_user(db, payload['id'])
+  payload = token_payload.get('payload', {}).get('id')
+  user = get_user(db, payload)
 
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
@@ -105,11 +104,11 @@ async def current_user(token_payload = Depends(verify_token), db: Session = Depe
   return {
     'user_id': user.user_id,
     'username': user.username,
-    'created_at': user.created_at,
-    'modified_at': user.modified_at
+    'created_at': convert_datetime(user.created_at),
+    'modified_at': convert_datetime(user.modified_at)
   }
 
 @router.get('/protected', status_code=200)
 async def protected_route(token_payload: dict = Depends(verify_token)):
-  payload = token_payload['payload']
-  return {'message': f'Welcome, {payload['sub']}'}
+  payload = token_payload.get('payload', {}).get('sub')
+  return {'message': f'Welcome, {payload}'}

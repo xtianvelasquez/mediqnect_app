@@ -1,3 +1,6 @@
+# set timezone
+timezone = 'Asia/Manila'
+
 # database credentials
 db_credentials = {
   'db_user': 'root',
