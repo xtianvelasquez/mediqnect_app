@@ -1,10 +1,12 @@
-from fastapi import APIRouter, WebSocket, Depends
+from fastapi import APIRouter, WebSocket,  HTTPException, Depends
 from sqlalchemy.orm import Session
+from typing import List
 import asyncio, traceback
 
 from app.database.session import get_db
-from app.core import online_users, verify_ws_token
-from app.crud import get_user, check_and_send_alarms
+from app.core import online_users, verify_token, verify_ws_token
+from app.crud import get_user, check_and_send_alarms, get_all_schedule
+from app.schemas import Schedule_Read
 
 router = APIRouter()
 
@@ -48,3 +50,16 @@ async def get_schedules(websocket: WebSocket, db: Session = Depends(get_db)):
   finally:
     print(f'User {payload} disconnected!')
     await websocket.close()
+
+@router.get('/schedules', response_model=List[Schedule_Read], status_code=200)
+def get_schedules(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
+  payload = token_payload.get('payload', {}).get('id')
+  user = get_user(db, payload)
+
+  if not user:
+    raise HTTPException(status_code=404, detail='User not found.')
+  
+  schedules = get_all_schedule(db, payload)
+  print('Schedules: ', schedules)
+
+  return schedules

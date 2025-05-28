@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.database.session import get_db
-from app.crud import get_medicine_form, get_dose_component, get_tablet_compartments, get_syrups_compartments
+from app.crud import get_medicine_forms, get_dose_components, get_tablet_compartments, get_syrups_compartments
 from app.schemas import Form_Base, Component_Base, Compartment_Read
 
 router = APIRouter()
@@ -12,14 +12,14 @@ router = APIRouter()
 def medicine_form(db: Session = Depends(get_db)):
   return [
     {'form_id': form.form_id, 'form_name': form.form_name}
-    for form in get_medicine_form(db)
+    for form in get_medicine_forms(db)
   ]
 
 @router.get('/components', response_model=List[Component_Base], status_code=200)
 def dose_component(db: Session = Depends(get_db)):
   return [
     {'component_id': component.component_id, 'component_name': component.component_name}
-    for component in get_dose_component(db)
+    for component in get_dose_components(db)
   ]
 
 @router.get('/compartments', response_model=List[Compartment_Read], status_code=200)

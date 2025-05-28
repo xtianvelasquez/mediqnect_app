@@ -12,7 +12,8 @@ class Schedule_Create(Schedule_Base):
 
 class Schedule_Read(Schedule_Base):
   schedule_id: int
-  status_name: str
+  medicine_name: str
+  color_name: str
 
   class Config:
     from_attributes = True

@@ -13,7 +13,7 @@ def get_specific_status(db: Session, status: str):
   except Exception as e:
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
-def get_medicine_form(db: Session):
+def get_medicine_forms(db: Session):
   try:
     return db.query(Medicine_Form).all()
   
@@ -23,7 +23,7 @@ def get_medicine_form(db: Session):
   except Exception as e:
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
   
-def get_dose_component(db: Session):
+def get_dose_components(db: Session):
   try:
     return db.query(Dose_Component).all()
   
