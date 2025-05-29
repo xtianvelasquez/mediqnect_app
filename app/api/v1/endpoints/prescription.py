@@ -7,7 +7,7 @@ from app.database.session import get_db
 from app.core import verify_token
 from app.crud import get_user, store_prescription
 from app.services import inspect_duration
-from app.schemas import Color_Base, Medicine_Base, Medicine_Compartment_Base, Intake_Base
+from app.schemas import Color_Base, Medicine_Base, Medicine_Compartment_Base, Intake_Base, Schedule_Edit
 
 router = APIRouter()
 
@@ -51,3 +51,15 @@ async def add_prescription(
     user.user_id)
   
   return stored_prescription
+
+# @router.post('/edit/prescription', status_code=201)
+# def edit_prescription(
+#     data: Schedule_Edit,
+#     token_payload = Depends(verify_token),
+#     db: Session = Depends(get_db)):
+#   
+#   payload = token_payload.get('payload', {}).get('id')
+#   user = get_user(db, payload)
+# 
+#   if not user:
+#     raise HTTPException(status_code=404, detail='User not found.')

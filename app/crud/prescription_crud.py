@@ -88,3 +88,34 @@ def store_prescription(
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
   return {'message': 'Your prescription details have been successfully added.'}
+
+#  def edit_prescription(db: Session, user_id, intake_id: int, data: dict):
+#    schedule = db.query(Schedule).filter(Schedule.id == edit_data.schedule_id).first()
+#    if not schedule:
+#        raise HTTPException(status_code=404, detail="Schedule not found")
+#
+#    # Update Schedule fields
+#    if edit_data.scheduled_datetime is not None:
+#        schedule.scheduled_datetime = edit_data.scheduled_datetime
+#
+#    # Fetch and update related Medicine
+#    medicine = db.query(Medicine).filter(Medicine.id == schedule.medicine_id).first()
+#    if not medicine:
+#        raise HTTPException(status_code=404, detail="Medicine not found")
+#
+#    if edit_data.medicine_name is not None:
+#        medicine.name = edit_data.medicine_name
+#
+#    if edit_data.expiration_date is not None:
+#        medicine.expiration_date = edit_data.expiration_date
+#
+#    # Commit once
+#    db.commit()
+#    db.refresh(schedule)
+#    db.refresh(medicine)
+#
+#    return {
+#        "message": "Schedule and medicine updated successfully.",
+#        "schedule_id": schedule.id,
+#        "medicine_id": medicine.id
+#    }
