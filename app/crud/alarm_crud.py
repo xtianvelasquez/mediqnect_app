@@ -20,7 +20,7 @@ def check_and_send_alarms(db: Session, user_id: int):
         'user_id': schedule.user_id,
         'intake_id': schedule.intake_id,
         'schedule_id': schedule.schedule_id,
-        'scheduled_datetime': schedule.scheduled_datetime,
+        'scheduled_datetime': convert_datetime(schedule.scheduled_datetime),
         'medicine_name': medicine_compartment.medicine.medicine_name,
         'compartment_id': medicine_compartment.compartment.compartment_id
       }

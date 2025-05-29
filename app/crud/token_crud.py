@@ -50,7 +50,7 @@ def logout_token(db: Session, token: str):
       raise HTTPException(status_code=404, detail='Token not found.')
     
     stored_token.is_active=False
-    stored_token.revoked_at=datetime.now(ZoneInfo('UTC'))
+    stored_token.revoked_at=datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0)
     db.commit()
     db.refresh(stored_token)
     

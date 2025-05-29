@@ -20,8 +20,8 @@ class Medicine(Base):
   form_id = Column(Integer, ForeignKey('medicine_form.form_id', ondelete='CASCADE'), nullable=False)
   net_content = Column(Integer)
   expiration_date = Column(Date)
-  created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')))
-  modified_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')), onupdate=lambda: datetime.now(ZoneInfo('UTC')))
+  created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0))
+  modified_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0), onupdate=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0))
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 
   user = relationship('User', back_populates='medicine')

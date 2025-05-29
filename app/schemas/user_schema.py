@@ -21,5 +21,6 @@ class User_Read(User_Base):
 class User_Auth(User_Base):
   password: str
 
-class Change_Password(User_Auth):
+class Change_Password(BaseModel):
+  password: str
   new_password: str

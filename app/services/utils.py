@@ -5,7 +5,7 @@ from app.config import timezone
 def convert_datetime(d: datetime) -> str:
   utc_dt = d.replace(tzinfo=ZoneInfo('UTC'))
   ph_dt = utc_dt.astimezone(ZoneInfo(timezone))
-  formatted_dt = ph_dt.strftime('%Y-%m-%d %I:%M %p')
+  formatted_dt = ph_dt.strftime('%Y-%m-%d %H:%M')
 
   return formatted_dt
 
@@ -15,6 +15,6 @@ def convert_to_utc(dt: datetime) -> datetime:
 
   return dt.astimezone(ZoneInfo('UTC'))
 
-def inspect_duration(start, end, interval):
+def inspect_duration(start, end, interval) -> bool:
   result = (end - start) < timedelta(days=interval)
   return result

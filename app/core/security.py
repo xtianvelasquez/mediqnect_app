@@ -13,8 +13,8 @@ from app.models import Token
 Oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 def create_token(data: dict):
-  expires_at = datetime.now(ZoneInfo('UTC')) + timedelta(days=29)  # Token expires in 29 days
-  issued_at = datetime.now(ZoneInfo('UTC'))
+  expires_at = datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0) + timedelta(days=29)  # Token expires in 29 days
+  issued_at = datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0)
 
   data.update({'iat': issued_at, 'exp': expires_at})
 

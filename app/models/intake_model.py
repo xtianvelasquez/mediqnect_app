@@ -31,8 +31,8 @@ class Intake(Base):
   component_id = Column(Integer, ForeignKey('dose_component.component_id', ondelete='CASCADE'), nullable=False)
   color_id = Column(Integer, ForeignKey('color.color_id', ondelete='SET NULL'), nullable=True)
   is_scheduled = Column(Boolean, default=False, server_default=text('false'))
-  created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')))
-  modified_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')), onupdate=lambda: datetime.now(ZoneInfo('UTC')))
+  created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0))
+  modified_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0), onupdate=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0))
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 
   user = relationship('User', back_populates='intake')

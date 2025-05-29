@@ -11,7 +11,7 @@ def generate_schedules(intake):
   schedules = []
   current = start
 
-  while current.date() <= end.date():
+  while current <= end:
     schedule = Schedule(
       user_id=intake.user_id,
       intake_id=intake.intake_id,
