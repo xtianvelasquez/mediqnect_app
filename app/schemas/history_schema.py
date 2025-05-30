@@ -6,14 +6,15 @@ from datetime import datetime
 class Intake_History_Base(BaseModel):
   user_id: int
   schedule_id: int
-  intake_datetime: datetime
+  scheduled_datetime: datetime
 
 class Intake_History_Create(Intake_History_Base):
   status_id: int
 
 class Intake_History_Read(Intake_History_Base):
   history_id: int
-  modified_at: datetime
+  history_datetime: datetime
+  medicine_name: str
   status_name: str
 
   class Config:
