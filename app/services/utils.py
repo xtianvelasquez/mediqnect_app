@@ -15,6 +15,8 @@ def convert_to_utc(dt: datetime) -> datetime:
 
   return dt.astimezone(ZoneInfo('UTC'))
 
-def inspect_duration(start, end, interval) -> bool:
-  result = (end - start) < timedelta(days=interval)
-  return result
+def inspect_day_duration(start: datetime, end: datetime, interval: int) -> bool:
+  return abs(end - start) <= timedelta(days=interval)
+
+def inspect_mins_duration(start: datetime, end: datetime, interval: int) -> bool:
+  return abs(end - start) <= timedelta(minutes=interval)

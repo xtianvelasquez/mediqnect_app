@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 import asyncio, traceback
 
 from app.database.session import get_db
-from app.core import verify_ws_token
+from app.core.security import verify_ws_token
 from app.crud import get_user, check_and_send_alarms
 
 router = APIRouter()

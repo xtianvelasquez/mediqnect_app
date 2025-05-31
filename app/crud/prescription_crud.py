@@ -27,7 +27,7 @@ def get_specific_compartment(db: Session, compartment_id: int):
   except Exception as e:
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
-def inspect_intake_schedule(db: Session, user_id: int, intake_id: int):
+def get_intake_schedules(db: Session, user_id: int, intake_id: int):
   try:
     return db.query(Schedule).filter(Schedule.user_id == user_id, Schedule.intake_id == intake_id).first()
   
@@ -89,7 +89,7 @@ def store_prescription(
       db.add(medicine_compartment_table)
 
       # Check if schedules for intake are already generated
-      schedules_exist = inspect_intake_schedule(db, user_id, intake_table.intake_id)
+      schedules_exist = get_intake_schedules(db, user_id, intake_table.intake_id)
       if not schedules_exist:
         schedules = generate_schedules(intake_table)
         intake_table.is_scheduled = True

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.database.session import get_db
-from app.core import verify_token
+from app.core.security import verify_token
 from app.crud import get_user, get_all_schedule, delete_specific_schedule
 from app.schemas import Schedule_Read, Schedule_Delete
 

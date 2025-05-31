@@ -1,41 +1,57 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
 from app.services import convert_datetime
 from app.models import Intake, Intake_History
 
-def get_all_history(db: Session, user_id):
-    sent_histories = []
+def get_specific_history(db: Session, user_id: int, schedule_id: int, history_id: int):
+  try:
+    return db.query(Intake_History).filter(
+      Intake_History.user_id == user_id,
+      Intake_History.schedule_id == schedule_id,
+      Intake_History.history_id == history_id).first()
 
-    try:
-        histories = (
-            db.query(Intake_History)
-            .filter(Intake_History.user_id == user_id)
-            .order_by(Intake_History.history_datetime.asc())
-            .all()
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e.orig)}")
+  except SQLAlchemyError as e:
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
 
-    if not histories:
-        return []  # Avoid unnecessary iterations
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
-    for history in histories:
-        intake = db.query(Intake).filter(Intake.intake_id == history.schedule.intake_id).first()
-        
-        if not intake:
-            continue  # Skip if intake record is missing
+def get_all_history(db: Session, user_id: int):
+  sent_histories = []
 
-        history_payload = {
-            "user_id": history.user_id,
-            "schedule_id": history.schedule_id,
-            "scheduled_datetime": history.schedule.scheduled_datetime,
-            "history_id": history.history_id,
-            "history_datetime": history.history_datetime,
-            "medicine_name": intake.medicine.medicine_name,
-            "status_name": history.status.status_name,
-        }
+  try:
+    histories = (db.query(Intake_History).filter(Intake_History.user_id == user_id).order_by(Intake_History.history_datetime.asc()).all())
+  except SQLAlchemyError as e:
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e.orig)}')
+  
+  if not histories:
+    return []
+  
+  for history in histories:
+    intake = db.query(Intake).filter(Intake.intake_id == history.schedule.intake_id).first()
 
-        sent_histories.append(history_payload)
+    if intake:
+      history_payload = {
+        'user_id': history.user_id,
+        'schedule_id': history.schedule_id,
+        'scheduled_datetime': history.schedule.scheduled_datetime,
+        'history_id': history.history_id,
+        'history_datetime': history.history_datetime,
+        'medicine_name': intake.medicine.medicine_name,
+        'status_name': history.status.status_name,
+      }
+      sent_histories.append(history_payload)
 
-    return sent_histories
+  return sent_histories
+
+def update_history(db: Session, user_id: int, schedule_id: int, history_id: int, history_datetime: datetime, status: str):
+  history = get_specific_history(db, user_id, schedule_id, history_id)
+  history.history_datetime = history_datetime
+  history.status = status
+
+  db.commit()
+  db.refresh(history)
+
+  return history

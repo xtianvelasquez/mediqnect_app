@@ -11,15 +11,6 @@ class Schedule_Base(BaseModel):
 class Schedule_Create(Schedule_Base):
   status_id: int
 
-class Schedule_Edit(BaseModel):
-  medicine_name: Optional[str] = None
-  expiration_date: Optional[datetime] = None
-  intake_id: Optional[int] = None
-
-class Schedule_Delete(BaseModel):
-  intake_id: int
-  schedule_id: int
-
 class Schedule_Read(Schedule_Base):
   schedule_id: int
   medicine_name: str
@@ -27,3 +18,7 @@ class Schedule_Read(Schedule_Base):
 
   class Config:
     from_attributes = True
+
+class Schedule_Delete(BaseModel):
+  intake_id: int
+  schedule_id: int

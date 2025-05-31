@@ -7,10 +7,12 @@ from app.models import Medicine_Compartment, Schedule, Color
 
 def get_specific_schedule(db: Session, user_id: int, intake_id: int, schedule_id: int):
   try:
-    return db.query(Schedule).filter(
-    Schedule.user_id == user_id,
-    Schedule.intake_id == intake_id,
-    Schedule.schedule_id == schedule_id).first()
+    query = db.query(Schedule).filter(Schedule.user_id == user_id, Schedule.schedule_id == schedule_id)
+    if intake_id is not None:
+      query = query.filter(Schedule.intake_id == intake_id)
+
+    schedule = query.first()
+    return schedule
   
   except SQLAlchemyError as e:
     raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
