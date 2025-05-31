@@ -1,5 +1,5 @@
 # set timezone
-timezone = 'Asia/Manila'
+LOCAL_TIMEZONE = 'Asia/Manila'
 
 # database credentials
 db_credentials = {

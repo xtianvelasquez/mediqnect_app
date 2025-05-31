@@ -36,9 +36,9 @@ def get_all_history(db: Session, user_id: int):
       history_payload = {
         'user_id': history.user_id,
         'schedule_id': history.schedule_id,
-        'scheduled_datetime': history.schedule.scheduled_datetime,
+        'scheduled_datetime': convert_datetime(history.schedule.scheduled_datetime),
         'history_id': history.history_id,
-        'history_datetime': history.history_datetime,
+        'history_datetime': convert_datetime(history.history_datetime),
         'medicine_name': intake.medicine.medicine_name,
         'status_name': history.status.status_name,
       }
@@ -46,7 +46,7 @@ def get_all_history(db: Session, user_id: int):
 
   return sent_histories
 
-def update_specific_history(db: Session, user_id: int, schedule_id: int, history_id: int, history_datetime: datetime, status: str):
+def update_specific_history(db: Session, user_id: int, schedule_id: int, history_id: int, history_datetime: datetime, status: int):
   history = get_specific_history(db, user_id, schedule_id, history_id)
   history.history_datetime = history_datetime
   history.status = status

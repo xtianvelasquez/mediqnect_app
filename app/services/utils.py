@@ -1,17 +1,24 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-from app.config import timezone
+from app.config import LOCAL_TIMEZONE
 
-def convert_datetime(d: datetime) -> str:
-  utc_dt = d.replace(tzinfo=ZoneInfo('UTC'))
-  ph_dt = utc_dt.astimezone(ZoneInfo(timezone))
-  formatted_dt = ph_dt.strftime('%Y-%m-%d %H:%M')
+def convert_datetime(dt: datetime) -> str:
+  if dt is None:
+    return None
 
-  return formatted_dt
+  if dt.tzinfo is None or dt.utcoffset() is None:
+    dt = dt.replace(tzinfo=ZoneInfo('UTC'))
+
+  local_dt = dt.astimezone(ZoneInfo(LOCAL_TIMEZONE))
+
+  return local_dt.strftime('%Y-%m-%d %H:%M')
 
 def convert_to_utc(dt: datetime) -> datetime:
+  if dt is None:
+    return None
+
   if dt.tzinfo is None or dt.utcoffset() is None:
-    raise ValueError(f'Datetime must be timezone-aware. Got: {dt}')
+    dt = dt.replace(tzinfo=ZoneInfo('UTC'))
 
   return dt.astimezone(ZoneInfo('UTC'))
 

@@ -5,7 +5,7 @@ from typing import List
 from app.database.session import get_db
 from app.core.security import verify_token
 from app.crud import get_user, get_all_history, get_specific_history, get_specific_schedule, update_specific_history
-from app.services import convert_to_utc, inspect_mins_duration
+from app.services import convert_to_utc, inspect_day_duration, inspect_mins_duration
 from app.constants import HISTORY_STATUS
 from app.schemas import Intake_History_Read, Intake_History_Update
 
@@ -45,7 +45,10 @@ def update_history(
   if not schedule:
     raise HTTPException(status_code=404, detail=f'Schedule not found.')
   
-  if inspect_mins_duration(schedule.scheduled_datetime, convert_to_utc(data.history_datetime), 3):
+  start = convert_to_utc(schedule.scheduled_datetime)
+  end = data.history_datetime
+  
+  if inspect_day_duration(start.date(), end.date(), 1) or inspect_mins_duration(start.time(), end.time(), 3):
     status = HISTORY_STATUS['COMPLETED']
   else:
     status = HISTORY_STATUS['LATE']
