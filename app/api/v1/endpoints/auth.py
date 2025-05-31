@@ -32,8 +32,8 @@ async def user_signup(data: User_Create, db: Session = Depends(get_db)):
 
   return stored_user
 
-@router.post('/username', status_code=200)
-async def change_username(
+@router.post('/update/username', status_code=200)
+async def update_username(
   data: User_Auth,
   token_payload = Depends(verify_token), 
   db: Session = Depends(get_db)):
@@ -59,8 +59,8 @@ async def change_username(
 
   return new_username
 
-@router.post('/password', status_code=200)
-async def change_password(
+@router.post('/update/password', status_code=200)
+async def update_password(
   data: Change_Password,
   token_payload = Depends(verify_token),
   db: Session = Depends(get_db)):
@@ -89,8 +89,8 @@ async def logout(token_payload = Depends(verify_token), db: Session = Depends(ge
   logged = logout_token(db, token_payload['raw'])
   return logged
 
-@router.get('/user', response_model=User_Read, status_code=200)
-async def current_user(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
+@router.get('/read/user', response_model=User_Read, status_code=200)
+async def read_user(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
   payload = token_payload.get('payload', {}).get('id')
   user = get_user(db, payload)
 

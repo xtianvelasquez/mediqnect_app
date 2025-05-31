@@ -4,14 +4,14 @@ from typing import List
 
 from app.database.session import get_db
 from app.core.security import verify_token
-from app.crud import get_user, get_all_history, get_specific_history, get_specific_schedule, update_history
+from app.crud import get_user, get_all_history, get_specific_history, get_specific_schedule, update_specific_history
 from app.services import convert_to_utc, inspect_mins_duration
 from app.constants import HISTORY_STATUS
 from app.schemas import Intake_History_Read, Intake_History_Update
 
 router = APIRouter()
 
-@router.get('/histories', response_model=List[Intake_History_Read], status_code=200)
+@router.get('/get/histories', response_model=List[Intake_History_Read], status_code=200)
 def get_histories(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
   payload = token_payload.get('payload', {}).get('id')
   user = get_user(db, payload)
@@ -50,6 +50,6 @@ def update_history(
   else:
     status = HISTORY_STATUS['LATE']
 
-  updated_history = update_history(db, payload, data.schedule_id, data.history_id, data.history_datetime, status)
+  updated_history = update_specific_history(db, payload, data.schedule_id, data.history_id, data.history_datetime, status)
 
   return updated_history

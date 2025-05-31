@@ -9,7 +9,7 @@ from app.schemas import Schedule_Read, Schedule_Delete
 
 router = APIRouter()
 
-@router.get('/schedules', response_model=List[Schedule_Read], status_code=200)
+@router.get('/get/schedules', response_model=List[Schedule_Read], status_code=200)
 def get_schedules(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
   payload = token_payload.get('payload', {}).get('id')
   user = get_user(db, payload)

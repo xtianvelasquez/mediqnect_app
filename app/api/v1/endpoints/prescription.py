@@ -11,8 +11,8 @@ from app.schemas import Color_Base, Medicine_Base, Medicine_Compartment_Base, In
 
 router = APIRouter()
 
-@router.post('/prescription', status_code=201)
-async def add_prescription(
+@router.post('/create/prescription', status_code=201)
+async def create_prescription(
   color: Color_Base = Body(...),
   medicine: Medicine_Base = Body(...),
   medicine_compartment: Medicine_Compartment_Base = Body(...),
