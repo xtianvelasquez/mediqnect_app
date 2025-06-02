@@ -19,7 +19,7 @@ async def user_login(data: User_Auth, db: Session = Depends(get_db)):
   token = create_token({'id': user.user_id, 'sub': user.username})
   stored_token = store_token(db, token)
 
-  return {'access_token': stored_token, 'token_type': 'Bearer'}
+  return {'access_token': stored_token, 'user': user.user_id, 'token_type': 'Bearer'}
 
 @router.post('/signup', status_code=201)
 async def user_signup(data: User_Create, db: Session = Depends(get_db)):
