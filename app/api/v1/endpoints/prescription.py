@@ -6,8 +6,9 @@ from zoneinfo import ZoneInfo
 
 from app.database.session import get_db
 from app.core.security import verify_token
-from app.crud import get_user, get_all_presription, store_prescription, delete_specific_prescription
 from app.services import inspect_day_duration
+from app.crud.auth_crud import get_user
+from app.crud.prescription_crud import get_all_presription, store_prescription, delete_specific_prescription
 from app.schemas import Color_Base, Medicine_Base, Medicine_Delete, Medicine_Compartment_Base, Intake_Base, Intake_Read
 
 router = APIRouter()

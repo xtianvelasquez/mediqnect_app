@@ -1,5 +1,5 @@
 COMPARTMENT_STATUS = {
-  'EMPTY': 1,
+  'VACANT': 1,
   'OCCUPIED': 2
 }
 

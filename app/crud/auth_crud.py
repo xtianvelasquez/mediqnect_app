@@ -1,8 +1,9 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from app.models import User
+
 from app.core.security import hash_password, verify_password
+from app.models import User
 
 def get_user(db: Session, user_id: int):
   try:

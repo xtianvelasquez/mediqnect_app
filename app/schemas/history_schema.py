@@ -6,9 +6,6 @@ from datetime import datetime
 class Intake_History_Base(BaseModel):
   schedule_id: int
 
-class Intake_History_Create(Intake_History_Base):
-  status_id: int
-
 class Intake_History_Read(Intake_History_Base):
   scheduled_datetime: datetime
   history_id: int

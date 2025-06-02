@@ -7,9 +7,6 @@ class Schedule_Base(BaseModel):
   intake_id: int
   scheduled_datetime: datetime
 
-class Schedule_Create(Schedule_Base):
-  status_id: int
-
 class Schedule_Read(Schedule_Base):
   schedule_id: int
   medicine_name: str

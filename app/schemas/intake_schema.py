@@ -10,9 +10,6 @@ class Component_Base(BaseModel):
 class Color_Base(BaseModel):
   color_name: str
 
-class Color_Read(Color_Base):
-  color_id: int
-
   class Config:
     from_attributes = True
 
@@ -45,10 +42,6 @@ class Intake_Base(BaseModel):
       values['end_datetime'] = end.astimezone(ZoneInfo('UTC'))
 
     return values
-
-class Intake_Create(Intake_Base):
-  user_id: int
-  status_id: int
 
 class Intake_Read(BaseModel):
   user_id: int

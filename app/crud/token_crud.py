@@ -53,6 +53,8 @@ def logout_token(db: Session, token: str):
     stored_token.revoked_at=datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0)
     db.commit()
     db.refresh(stored_token)
+
+    return {'message': 'You have been logged out.'}
   
   except SQLAlchemyError as e:
     db.rollback()
@@ -61,5 +63,3 @@ def logout_token(db: Session, token: str):
   except Exception as e:
     db.rollback()
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
-
-  return {'message': 'You have been logged out.'}

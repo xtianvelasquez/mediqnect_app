@@ -2,8 +2,8 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from app.services import convert_datetime
-from app.constants import SCHEDULE_STATUS
 from app.models import Medicine_Compartment, Schedule, Color
+from app.constants import SCHEDULE_STATUS
 
 def get_specific_schedule(db: Session, user_id: int, intake_id: int, schedule_id: int):
   try:
@@ -25,12 +25,11 @@ def get_all_schedule(db: Session, user_id: int):
 
   try:
     schedules = (db.query(Schedule).filter(Schedule.user_id == user_id, Schedule.status_id == SCHEDULE_STATUS['ONGOING']).order_by(Schedule.scheduled_datetime.asc()).all())
-
   except SQLAlchemyError as e:
     raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
-
-  except Exception as e:
-    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+  
+  if not schedules:
+    return []
 
   for schedule in schedules:
     medicine_compartment = db.query(Medicine_Compartment).filter(Medicine_Compartment.medicine_id == schedule.intake.medicine_id).first()

@@ -4,42 +4,13 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from fastapi import HTTPException
 
 from app.services import generate_schedules
-from app.models import Medicine, Medicine_Compartment, Compartment, Intake, Schedule, Color
+from app.crud.general_crud import get_specific_color, get_specific_compartment, get_specific_medicine
+from app.models import Medicine, Medicine_Compartment, Intake, Schedule, Color
 from app.constants import MEDICINE_STATUS, INTAKE_STATUS, COMPARTMENT_STATUS
-
-def get_specific_color(db: Session, color_name: str):
-  try:
-    return db.query(Color).filter(Color.color_name == color_name).first()
-  
-  except SQLAlchemyError as e:
-    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
-
-  except Exception as e:
-    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
-  
-def get_specific_compartment(db: Session, compartment_id: int):
-  try:
-    return db.query(Compartment).filter(Compartment.compartment_id == compartment_id).first()
-
-  except SQLAlchemyError as e:
-    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
-
-  except Exception as e:
-    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
 def get_intake_schedule(db: Session, user_id: int, intake_id: int):
   try:
     return db.query(Schedule).filter(Schedule.user_id == user_id, Schedule.intake_id == intake_id).first()
-  
-  except SQLAlchemyError as e:
-    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
-
-  except Exception as e:
-    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
-  
-def get_specific_medicine(db: Session, user_id: int, medicine_id: int):
-  try:
-    return db.query(Medicine).filter(Medicine.user_id == user_id, Medicine.medicine_id == medicine_id).first()
   
   except SQLAlchemyError as e:
     raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
@@ -75,14 +46,21 @@ def get_all_presription(db: Session, user_id: int):
 
 def delete_specific_prescription(db: Session, user_id: int, medicine_id: int):
   prescription = get_specific_medicine(db, user_id, medicine_id)
-
   if not prescription:
-    raise HTTPException(status_code=404, detail=f'Schedule not found.')
+    raise HTTPException(status_code=404, detail='Schedule not found.')
   
+  if not prescription.medicine_compartment:
+    raise HTTPException(status_code=404, detail='Medicine compartment not assigned.')
+
+  compartment = get_specific_compartment(db, prescription.medicine_compartment.compartment_id)
+  if not compartment:
+    raise HTTPException(status_code=404, detail='Compartment not found.')
+  
+  compartment.status_id = COMPARTMENT_STATUS['VACANT']
   db.delete(prescription)
   db.commit()
-
-  return {'message': 'The prescription has been successfully deleted.'}
+  
+  return {'message': 'Prescription deleted and compartment marked as vacant.'}
 
 def store_prescription(
     db: Session,

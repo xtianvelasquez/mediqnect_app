@@ -4,8 +4,11 @@ from datetime import datetime
 
 from app.database.session import get_db
 from app.core.security import create_token, verify_token, validate_password, verify_password, hash_password
-from app.crud import store_token, logout_token, get_user, get_username, authenticate_user, store_user, update_user_field
 from app.services import convert_datetime, inspect_day_duration
+
+from app.crud.token_crud import store_token, logout_token
+from app.crud.auth_crud import get_user, get_username, authenticate_user, store_user, update_user_field
+
 from app.schemas import Token_Response, User_Auth, User_Read, User_Create, Change_Password
 
 router = APIRouter()

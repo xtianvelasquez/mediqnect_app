@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.database.session import get_db
-from app.crud import get_medicine_forms, get_dose_components, get_tablet_compartments, get_syrups_compartments
+from app.crud.general_crud import get_medicine_forms, get_dose_components, get_tablet_compartments, get_syrups_compartments
 from app.schemas import Form_Base, Component_Base, Compartment_Read
 
 router = APIRouter()
