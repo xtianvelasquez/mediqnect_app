@@ -36,6 +36,53 @@ def get_intake_schedule(db: Session, user_id: int, intake_id: int):
 
   except Exception as e:
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+  
+def get_specific_medicine(db: Session, user_id: int, medicine_id: int):
+  try:
+    return db.query(Medicine).filter(Medicine.user_id == user_id, Medicine.medicine_id == medicine_id).first()
+  
+  except SQLAlchemyError as e:
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+
+def get_all_presription(db: Session, user_id: int):
+  sent_intakes = []
+
+  try:
+    intakes = (db.query(Intake).filter(Intake.user_id == user_id).order_by(Intake.start_datetime.asc()).all())
+  except SQLAlchemyError as e:
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+
+  if not intakes:
+    return []
+  
+  for intake in intakes:
+    intake_payload = {
+      'user_id': intake.user_id,
+      'intake_id': intake.intake_id,
+      'start_datetime': intake.start_datetime,
+      'end_datetime': intake.end_datetime,
+      'medicine_id': intake.medicine.medicine_id,
+      'medicine_name': intake.medicine.medicine_name,
+      'color_name': intake.color.color_name,
+      'status_name': intake.status.status_name
+    }
+    sent_intakes.append(intake_payload)
+
+  return sent_intakes
+
+def delete_specific_prescription(db: Session, user_id: int, medicine_id: int):
+  prescription = get_specific_medicine(db, user_id, medicine_id)
+
+  if not prescription:
+    raise HTTPException(status_code=404, detail=f'Schedule not found.')
+  
+  db.delete(prescription)
+  db.commit()
+
+  return {'message': 'The prescription has been successfully deleted.'}
 
 def store_prescription(
     db: Session,

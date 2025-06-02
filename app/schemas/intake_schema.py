@@ -50,12 +50,14 @@ class Intake_Create(Intake_Base):
   user_id: int
   status_id: int
 
-class Intake_Read(Intake_Base):
-  intake_id: int
+class Intake_Read(BaseModel):
   user_id: int
-  is_scheduled: bool
-  created_at: datetime
-  modified_at: datetime
+  intake_id: int
+  start_datetime: datetime
+  end_datetime: datetime
+  medicine_id: int
+  medicine_name: str
+  color_name: str
   status_name: str
 
   class Config:

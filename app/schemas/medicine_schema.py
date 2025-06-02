@@ -27,6 +27,9 @@ class Medicine_Read(Medicine_Base):
   class Config:
     from_attributes = True
 
+class Medicine_Delete(BaseModel):
+  medicine_id: int
+
 class Medicine_Compartment_Base(BaseModel):
   compartment_id: int
 

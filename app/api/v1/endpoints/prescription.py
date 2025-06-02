@@ -1,15 +1,28 @@
 from fastapi import APIRouter, HTTPException, Body, Depends
 from sqlalchemy.orm import Session
+from typing import List
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from app.database.session import get_db
 from app.core.security import verify_token
-from app.crud import get_user, store_prescription
+from app.crud import get_user, get_all_presription, store_prescription, delete_specific_prescription
 from app.services import inspect_day_duration
-from app.schemas import Color_Base, Medicine_Base, Medicine_Compartment_Base, Intake_Base
+from app.schemas import Color_Base, Medicine_Base, Medicine_Delete, Medicine_Compartment_Base, Intake_Base, Intake_Read
 
 router = APIRouter()
+
+@router.get('/read/prescription', response_model=List[Intake_Read], status_code=200)
+async def read_prescription(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
+  payload = token_payload.get('payload', {}).get('id')
+  user = get_user(db, payload)
+
+  if not user:
+    raise HTTPException(status_code=404, detail='User not found.')
+  
+  intakes = get_all_presription(db, payload)
+
+  return intakes
 
 @router.post('/create/prescription', status_code=201)
 async def create_prescription(
@@ -20,8 +33,8 @@ async def create_prescription(
   token_payload = Depends(verify_token),
   db: Session = Depends(get_db)):
   
-  payload = token_payload['payload']
-  user = get_user(db, payload['id'])
+  payload = token_payload.get('payload', {}).get('id')
+  user = get_user(db, payload)
 
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
@@ -51,3 +64,15 @@ async def create_prescription(
     user.user_id)
   
   return stored_prescription
+
+@router.post('/delete/prescription', status_code=200)
+def delete_prescription(data: Medicine_Delete, token_payload = Depends(verify_token), db: Session = Depends(get_db)):
+  payload = token_payload.get('payload', {}).get('id')
+  user = get_user(db, payload)
+
+  if not user:
+    raise HTTPException(status_code=404, detail='User not found.')
+  
+  schedule = delete_specific_prescription(db, payload, data.medicine_id)
+
+  return schedule

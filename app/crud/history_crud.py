@@ -49,9 +49,9 @@ def get_all_history(db: Session, user_id: int):
 def update_specific_history(db: Session, user_id: int, schedule_id: int, history_id: int, history_datetime: datetime, status: int):
   history = get_specific_history(db, user_id, schedule_id, history_id)
   history.history_datetime = history_datetime
-  history.status = status
+  history.status_id = status
 
   db.commit()
   db.refresh(history)
 
-  return history
+  return {'message': 'Your missed medicine has been successfully updated.'}
