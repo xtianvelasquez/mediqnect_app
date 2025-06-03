@@ -1,8 +1,12 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from typing import List
 
 # User
+class Account_Base(BaseModel):
+  ids: List[int]
+
 class User_Base(BaseModel):
   username: str
 

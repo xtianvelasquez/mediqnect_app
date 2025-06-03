@@ -1,15 +1,16 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from datetime import datetime
+from typing import List
 
 from app.database.session import get_db
 from app.core.security import create_token, verify_token, validate_password, verify_password, hash_password
 from app.services import convert_datetime, inspect_day_duration
 
 from app.crud.token_crud import store_token, logout_token
-from app.crud.auth_crud import get_user, get_username, authenticate_user, store_user, update_user_field
+from app.crud.auth_crud import get_user, get_all_users, get_username, authenticate_user, store_user, update_user_field
 
-from app.schemas import Token_Response, User_Auth, User_Read, User_Create, Change_Password
+from app.schemas import Token_Response, Account_Base, User_Base, User_Auth, User_Read, User_Create, Change_Password
 
 router = APIRouter()
 
@@ -91,6 +92,11 @@ async def update_password(
 async def logout(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
   logged = logout_token(db, token_payload['raw'])
   return logged
+
+@router.post('/get/accounts', response_model=List[User_Base], status_code=200)
+async def get_accounts(data: Account_Base, db: Session = Depends(get_db)):
+  users = get_all_users(db, data.ids)
+  return users
 
 @router.get('/read/user', response_model=User_Read, status_code=200)
 async def read_user(token_payload = Depends(verify_token), db: Session = Depends(get_db)):

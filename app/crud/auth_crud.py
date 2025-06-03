@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from typing import List
 
 from app.core.security import hash_password, verify_password
 from app.models import User
@@ -14,6 +15,22 @@ def get_user(db: Session, user_id: int):
 
   except Exception as e:
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+
+from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from sqlalchemy.exc import SQLAlchemyError
+from typing import List
+
+def get_all_users(db: Session, user_ids: List[int]):
+  try:
+    users = db.query(User).filter(User.user_id.in_(user_ids)).all()
+  except SQLAlchemyError as e:
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e.orig)}')
+  
+  if not users:
+    return []
+
+  return [{'username': user.username} for user in users]
 
 def get_username(db: Session, username: str):
   try:
