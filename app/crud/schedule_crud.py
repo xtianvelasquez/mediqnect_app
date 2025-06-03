@@ -3,13 +3,16 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from app.services import convert_datetime
 from app.models import Medicine_Compartment, Schedule, Color
-from app.constants import SCHEDULE_STATUS
 
 def get_specific_schedule(db: Session, user_id: int, intake_id: int, schedule_id: int):
   try:
-    query = db.query(Schedule).filter(Schedule.user_id == user_id, Schedule.schedule_id == schedule_id)
+    query = db.query(Schedule).filter(Schedule.user_id == user_id)
+
     if intake_id is not None:
       query = query.filter(Schedule.intake_id == intake_id)
+
+    if schedule_id is not None:
+      query = query.filter(Schedule.schedule_id == schedule_id)
 
     schedule = query.first()
     return schedule
@@ -20,11 +23,20 @@ def get_specific_schedule(db: Session, user_id: int, intake_id: int, schedule_id
   except Exception as e:
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
-def get_all_schedule(db: Session, user_id: int):
+def get_all_schedule(db: Session, user_id: int, intake_id: int, status_id: int):
   sent_schedules = []
 
   try:
-    schedules = (db.query(Schedule).filter(Schedule.user_id == user_id, Schedule.status_id == SCHEDULE_STATUS['ONGOING']).order_by(Schedule.scheduled_datetime.asc()).all())
+    query = db.query(Schedule).filter(Schedule.user_id == user_id)
+
+    if intake_id is not None:
+      query = query.filter(Schedule.intake_id == intake_id)
+
+    if status_id is not None:
+      query = query.filter(Schedule.status_id == status_id)
+
+    schedules = (query.order_by(Schedule.scheduled_datetime.asc()).all())
+
   except SQLAlchemyError as e:
     raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
   

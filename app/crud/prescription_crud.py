@@ -4,13 +4,24 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from fastapi import HTTPException
 
 from app.services import generate_schedules
-from app.crud.general_crud import get_specific_color, get_specific_compartment, get_specific_medicine
-from app.models import Medicine, Medicine_Compartment, Intake, Schedule, Color
+from app.crud.schedule_crud import get_specific_schedule
+from app.crud.general_crud import get_specific_color, get_specific_compartment
+from app.models import Medicine, Medicine_Compartment, Intake, Color
 from app.constants import MEDICINE_STATUS, INTAKE_STATUS, COMPARTMENT_STATUS
 
-def get_intake_schedule(db: Session, user_id: int, intake_id: int):
+def get_specific_medicine(db: Session, user_id: int, medicine_id: int):
   try:
-    return db.query(Schedule).filter(Schedule.user_id == user_id, Schedule.intake_id == intake_id).first()
+    return db.query(Medicine).filter(Medicine.user_id == user_id, Medicine.medicine_id == medicine_id).first()
+  
+  except SQLAlchemyError as e:
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+  
+def get_specific_intake(db: Session, user_id: int, intake_id: int):
+  try:
+    return db.query(Intake).filter(Intake.user_id == user_id, Intake.medicine_id == intake_id).first()
   
   except SQLAlchemyError as e:
     raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
@@ -18,7 +29,7 @@ def get_intake_schedule(db: Session, user_id: int, intake_id: int):
   except Exception as e:
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
-def get_all_presription(db: Session, user_id: int):
+def get_all_intake(db: Session, user_id: int):
   sent_intakes = []
 
   try:
@@ -44,7 +55,7 @@ def get_all_presription(db: Session, user_id: int):
 
   return sent_intakes
 
-def delete_specific_prescription(db: Session, user_id: int, medicine_id: int):
+def delete_specific_medicine(db: Session, user_id: int, medicine_id: int):
   prescription = get_specific_medicine(db, user_id, medicine_id)
   if not prescription:
     raise HTTPException(status_code=404, detail='Schedule not found.')
@@ -114,7 +125,7 @@ def store_prescription(
       db.add(medicine_compartment_table)
 
       # Check if schedules for intake are already generated
-      schedules_exist = get_intake_schedule(db, user_id, intake_table.intake_id)
+      schedules_exist = get_specific_schedule(db, user_id, intake_table.intake_id, None)
       if not schedules_exist:
         schedules = generate_schedules(intake_table)
         intake_table.is_scheduled = True

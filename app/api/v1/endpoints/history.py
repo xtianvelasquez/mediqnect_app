@@ -7,7 +7,7 @@ from app.core.security import verify_token
 from app.services import convert_to_utc, inspect_day_duration, inspect_mins_duration
 
 from app.crud.auth_crud import get_user
-from app.crud.history_crud import get_all_history, get_specific_history, update_specific_history
+from app.crud.history_crud import get_all_history, update_specific_history
 from app.crud.schedule_crud import get_specific_schedule
 
 from app.schemas import Intake_History_Read, Intake_History_Update

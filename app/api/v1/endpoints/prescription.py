@@ -8,7 +8,7 @@ from app.database.session import get_db
 from app.core.security import verify_token
 from app.services import inspect_day_duration
 from app.crud.auth_crud import get_user
-from app.crud.prescription_crud import get_all_presription, store_prescription, delete_specific_prescription
+from app.crud.prescription_crud import get_all_intake, store_prescription, delete_specific_medicine
 from app.schemas import Color_Base, Medicine_Base, Medicine_Delete, Medicine_Compartment_Base, Intake_Base, Intake_Read
 
 router = APIRouter()
@@ -21,7 +21,7 @@ async def read_prescription(token_payload = Depends(verify_token), db: Session =
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
   
-  intakes = get_all_presription(db, payload)
+  intakes = get_all_intake(db, payload)
 
   return intakes
 
@@ -74,6 +74,6 @@ def delete_prescription(data: Medicine_Delete, token_payload = Depends(verify_to
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
   
-  schedule = delete_specific_prescription(db, payload, data.medicine_id)
+  medicine = delete_specific_medicine(db, payload, data.medicine_id)
 
-  return schedule
+  return medicine

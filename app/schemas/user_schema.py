@@ -4,9 +4,6 @@ from datetime import datetime
 from typing import List
 
 # User
-class Account_Base(BaseModel):
-  ids: List[int]
-
 class User_Base(BaseModel):
   username: str
 
@@ -28,3 +25,9 @@ class User_Auth(User_Base):
 class Change_Password(BaseModel):
   password: str
   new_password: str
+
+class Account_Base(BaseModel):
+  ids: List[int]
+
+class Account_Read(User_Base):
+  user_id: int
