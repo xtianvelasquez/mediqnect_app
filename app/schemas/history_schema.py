@@ -19,3 +19,8 @@ class Intake_History_Read(Intake_History_Base):
 class Intake_History_Update(Intake_History_Base):
   history_datetime: datetime
   history_id: int
+
+# Alarm
+class Alarm_Confirm(Intake_History_Base):
+  intake_id: int
+  history_datetime: datetime

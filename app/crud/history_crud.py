@@ -7,10 +7,12 @@ from app.models import Intake, Intake_History
 
 def get_specific_history(db: Session, user_id: int, schedule_id: int, history_id: int):
   try:
-    return db.query(Intake_History).filter(
-      Intake_History.user_id == user_id,
-      Intake_History.schedule_id == schedule_id,
-      Intake_History.history_id == history_id).first()
+    query = db.query(Intake_History).filter(Intake_History.user_id == user_id, Intake_History.schedule_id == schedule_id)
+    
+    if history_id is not None:
+      query = query.filter(Intake_History.history_id == history_id)
+
+    return query.first()
 
   except SQLAlchemyError as e:
     raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')

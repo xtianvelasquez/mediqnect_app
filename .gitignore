@@ -1,6 +1,7 @@
-app/.env/requirements.txt
-app/.env/README.md
 app/.env/db.erd.json
+app/.env/README.md
+app/.env/requirements.txt
 app/models/models.py
 app/schemas/schemas.py
 app/publisher.py
+app/api/v1/endpoints/test.py

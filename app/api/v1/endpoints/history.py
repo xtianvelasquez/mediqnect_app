@@ -47,7 +47,7 @@ def update_history(
   start = convert_to_utc(schedule.scheduled_datetime)
   end = data.history_datetime
   
-  if inspect_day_duration(start.date(), end.date(), 1) or inspect_mins_duration(start.time(), end.time(), 5):
+  if inspect_day_duration(start.date(), end.date(), 1) and inspect_mins_duration(start.time(), end.time(), 5):
     status = HISTORY_STATUS['COMPLETED']
   else:
     status = HISTORY_STATUS['LATE']

@@ -22,6 +22,9 @@ def convert_to_utc(dt: datetime) -> datetime:
 
   return dt.astimezone(ZoneInfo('UTC'))
 
+def count_datetime_gap(start: datetime, end: datetime) -> int:
+  return abs(end - start)
+
 def inspect_day_duration(start: datetime, end: datetime, interval: int) -> bool:
   return abs(end - start) <= timedelta(days=interval)
 
