@@ -8,7 +8,7 @@ app = FastAPI(title='MediQnect')
 
 app.add_middleware(
   CORSMiddleware,
-  allow_origins=['http://localhost:8100'],  # Ionic default
+  allow_origins=['*'],  # Ionic default
   allow_credentials=True,
   allow_methods=['*'],
   allow_headers=['*'],

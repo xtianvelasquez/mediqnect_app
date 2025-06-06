@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth, general, prescription, schedule, history, alarm, test
+from app.api.v1.endpoints import auth, general, prescription, schedule, history, alarm
 
 router = APIRouter()
 
@@ -9,4 +9,3 @@ router.include_router(prescription.router, tags=['Prescription'])
 router.include_router(schedule.router, tags=['Schedule'])
 router.include_router(history.router, tags=['History'])
 router.include_router(alarm.router, tags=['Alarm'])
-router.include_router(test.router, tags=['Test'])

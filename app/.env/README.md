@@ -109,7 +109,9 @@ pip install passlib[bcrypt]
 pip install pyjwt
 pip install pymysql
 pip install sqlalchemy
+pip install tzdata
 pip install uvicorn
+pip install websockets
 
 Run the ionic web: ionic serve
 Run the fastapi backend: uvicorn main:app --reload
