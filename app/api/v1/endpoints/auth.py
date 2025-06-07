@@ -56,7 +56,7 @@ async def update_username(
   if existing_username:
     raise HTTPException(status_code=400, detail='Username already exists.')
   
-  if not verify_password(user.password_hash, data.password):
+  if not verify_password(data.password, user.password_hash):
     raise HTTPException(status_code=403, detail='Incorrect password.')
 
   new_username = update_user_field(db, user, 'username', data.username)
@@ -78,10 +78,10 @@ async def update_password(
   if inspect_day_duration(datetime.utcnow(), user.modified_at, 7):
     raise HTTPException(status_code=403, detail='Password can only be changed after 7 days.')
   
-  if not verify_password(user.password_hash, data.password):
+  if not verify_password(data.password, user.password_hash):
     raise HTTPException(status_code=403, detail='Incorrect password.')
   
-  if verify_password(user.password_hash, data.new_password):
+  if verify_password(data.new_password, user.password_hash):
     raise HTTPException(status_code=403, detail='The password you entered is the same as your current password. Please choose a new one to ensure the security of your account.')
 
   new_password = update_user_field(db, user, 'password_hash', hash_password(data.new_password))

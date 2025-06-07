@@ -1,5 +1,6 @@
-from fastapi import APIRouter, WebSocket, HTTPException, Depends
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Depends
 from sqlalchemy.orm import Session
+from datetime import timedelta
 import asyncio, traceback
 
 from app.database.session import get_db
@@ -22,11 +23,10 @@ async def get_schedules(websocket: WebSocket, db: Session = Depends(get_db)):
   if not token:
     await websocket.close(code=1008)
     return
-  
+
   try:
     token_payload = verify_ws_token(db, token)
     payload = token_payload.get('payload', {}).get('id')
-
   except Exception as e:
     print(f'Token error: {e}')
     await websocket.close(code=1008)
@@ -46,15 +46,18 @@ async def get_schedules(websocket: WebSocket, db: Session = Depends(get_db)):
       await websocket.send_json({'alarms': alarms})
       await asyncio.sleep(60)
 
+  except WebSocketDisconnect:
+    print(f'User {payload} disconnected (client closed WebSocket).')
+
   except Exception as e:
-    print(f'WebSocket error: {type(e).__name__}: {e}')
+    print(f'Unexpected WebSocket error: {type(e).__name__}: {e}')
     traceback.print_exc()
 
   finally:
-    print(f'User {payload} disconnected!')
-    await websocket.close()
-
-from datetime import timedelta
+    if websocket.client_state.name != "DISCONNECTED":
+      await websocket.close()
+    
+    print(f'User {payload} fully disconnected.')
 
 @router.post('/confirm', status_code=200)
 def confirm_alarm(
