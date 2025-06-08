@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from fastapi import HTTPException
+from datetime import datetime
 
 from app.services import generate_schedules
 from app.crud.schedule_crud import get_specific_schedule
@@ -48,6 +48,8 @@ def get_all_intake(db: Session, user_id: int):
       'end_datetime': intake.end_datetime,
       'medicine_id': intake.medicine.medicine_id,
       'medicine_name': intake.medicine.medicine_name,
+      'net_content': intake.medicine.net_content,
+      'expiration_date': intake.medicine.expiration_date,
       'color_name': intake.color.color_name,
       'status_name': intake.status.status_name
     }
@@ -55,23 +57,71 @@ def get_all_intake(db: Session, user_id: int):
 
   return sent_intakes
 
-def delete_specific_medicine(db: Session, user_id: int, medicine_id: int):
-  prescription = get_specific_medicine(db, user_id, medicine_id)
-  if not prescription:
-    raise HTTPException(status_code=404, detail='Schedule not found.')
-  
-  if not prescription.medicine_compartment:
-    raise HTTPException(status_code=404, detail='Medicine compartment not assigned.')
+def update_specific_medicine(
+    db: Session,user_id: int,
+    medicine_id: int,
+    medicine_name: str,
+    net_content: int,
+    expiration_date: datetime,
+    color_name: str
+):
+  try:
+    medicine = get_specific_medicine(db, user_id, medicine_id)
 
-  compartment = get_specific_compartment(db, prescription.medicine_compartment.compartment_id)
-  if not compartment:
-    raise HTTPException(status_code=404, detail='Compartment not found.')
+    if medicine_name not in [None, '']:
+      medicine.medicine_name = medicine_name
+    if net_content not in [None, '', 0]:
+      medicine.net_content = net_content
+    if expiration_date not in [None, '']:
+      medicine.expiration_date = expiration_date
+
+    if color_name is not None and medicine.intake is not None:
+      intake = get_specific_intake(db, user_id, medicine.intake.intake_id)
+      if intake:
+        existing_color = get_specific_color(db, color_name)
+        if existing_color:
+          intake.color_id = existing_color.color_id
+        else:
+          new_color = Color(color_name=color_name)
+          db.add(new_color)
+          db.commit()
+          db.refresh(new_color)
+          intake.color_id=new_color.color_id
+
+    db.commit()
+    db.refresh(medicine)
+    
+    return {'message': 'Your medicine has been successfully updated.', 'updated_medicine': medicine}
+
+  except SQLAlchemyError as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+
+  except Exception as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+
+def delete_specific_medicine(db: Session, user_id: int, medicine_id: int):
+  try:
+    prescription = get_specific_medicine(db, user_id, medicine_id)
+
+    compartment = get_specific_compartment(db, prescription.medicine_compartment.compartment_id)
+    if not compartment:
+      raise HTTPException(status_code=404, detail='Compartment not found.')
   
-  compartment.status_id = COMPARTMENT_STATUS['VACANT']
-  db.delete(prescription)
-  db.commit()
+    compartment.status_id = COMPARTMENT_STATUS['VACANT']
+    db.delete(prescription)
+    db.commit()
   
-  return {'message': 'Prescription deleted and compartment marked as vacant.'}
+    return {'message': 'Prescription deleted and compartment marked as vacant.'}
+  
+  except SQLAlchemyError as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+
+  except Exception as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
 def store_prescription(
     db: Session,
@@ -143,6 +193,8 @@ def store_prescription(
       db.rollback()
       raise HTTPException(status_code=400, detail=f'Data integrity issue: {str(e)}')
     
+    return {'message': 'Your prescription details have been successfully added.'}
+  
   except SQLAlchemyError as e:
     db.rollback()
     raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
@@ -150,5 +202,3 @@ def store_prescription(
   except Exception as e:
     db.rollback()
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
-
-  return {'message': 'Your prescription details have been successfully added.'}

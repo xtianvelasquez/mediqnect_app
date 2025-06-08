@@ -49,15 +49,21 @@ def get_all_history(db: Session, user_id: int):
   return sent_histories
 
 def update_specific_history(db: Session, user_id: int, schedule_id: int, history_id: int, history_datetime: datetime, status: int):
-  history = get_specific_history(db, user_id, schedule_id, history_id)
+  try:
+    history = get_specific_history(db, user_id, schedule_id, history_id)
 
-  if not history:
-    raise HTTPException(status_code=404, detail='History not found.')
+    history.history_datetime = history_datetime
+    history.status_id = status
 
-  history.history_datetime = history_datetime
-  history.status_id = status
+    db.commit()
+    db.refresh(history)
 
-  db.commit()
-  db.refresh(history)
+    return {'message': 'Your missed medicine has been successfully updated.'}
+  
+  except SQLAlchemyError as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
 
-  return {'message': 'Your missed medicine has been successfully updated.'}
+  except Exception as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')

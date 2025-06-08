@@ -27,7 +27,7 @@ class Medicine(Base):
   user = relationship('User', back_populates='medicine')
   form = relationship('Medicine_Form', back_populates='medicine')
   medicine_compartment = relationship('Medicine_Compartment', back_populates='medicine', cascade='all, delete-orphan', uselist=False)
-  intake = relationship('Intake', back_populates='medicine', cascade='all, delete-orphan')
+  intake = relationship('Intake', back_populates='medicine', cascade='all, delete-orphan', uselist=False)
   status = relationship('Statuses', back_populates='medicine')
 
 class Medicine_Compartment(Base):

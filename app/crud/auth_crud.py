@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from typing import List
 
-from app.core.security import hash_password, verify_password
+from app.core.security import hash_password
 from app.models import User
 
 def get_user(db: Session, user_id: int):
@@ -36,20 +36,6 @@ def get_username(db: Session, username: str):
   
   except Exception as e:
       raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
-
-def authenticate_user(db: Session, username: str, password: str):
-  try:
-    user = get_username(db, username)
-    if not user or not verify_password(password, user.password_hash):
-      raise HTTPException(status_code=401, detail='Invalid username or password. Please try again.')
-    
-    return user
-  
-  except SQLAlchemyError as e:
-    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
-  
-  except Exception as e:
-    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
 def store_user(db: Session, username: str, password: str, dispenser_code: str):
   try:

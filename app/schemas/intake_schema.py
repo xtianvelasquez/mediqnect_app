@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, model_validator
+from typing import Optional
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -50,6 +51,8 @@ class Intake_Read(BaseModel):
   end_datetime: datetime
   medicine_id: int
   medicine_name: str
+  net_content: Optional[int]
+  expiration_date: Optional[datetime]
   color_name: str
   status_name: str
 

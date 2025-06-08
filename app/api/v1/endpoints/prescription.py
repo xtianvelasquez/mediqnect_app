@@ -8,8 +8,8 @@ from app.database.session import get_db
 from app.core.security import verify_token
 from app.services import inspect_day_duration
 from app.crud.auth_crud import get_user
-from app.crud.prescription_crud import get_all_intake, store_prescription, delete_specific_medicine
-from app.schemas import Color_Base, Medicine_Base, Medicine_Delete, Medicine_Compartment_Base, Intake_Base, Intake_Read
+from app.crud.prescription_crud import get_all_intake, get_specific_medicine, update_specific_medicine, store_prescription, delete_specific_medicine
+from app.schemas import Color_Base, Medicine_Base, Medicine_Edit, Medicine_Delete, Medicine_Compartment_Base, Intake_Base, Intake_Read
 
 router = APIRouter()
 
@@ -73,7 +73,41 @@ def delete_prescription(data: Medicine_Delete, token_payload = Depends(verify_to
 
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
+
+  prescription = get_specific_medicine(db, payload, data.medicine_id)
+  if not prescription:
+    raise HTTPException(status_code=404, detail='Schedule not found.')
+  
+  if not prescription.medicine_compartment:
+    raise HTTPException(status_code=404, detail='Medicine compartment not assigned.')
   
   medicine = delete_specific_medicine(db, payload, data.medicine_id)
+
+  return medicine
+
+@router.post('/update/medicine', status_code=200)
+def update_medicine(data: Medicine_Edit, token_payload = Depends(verify_token), db: Session = Depends(get_db)):
+  payload = token_payload.get('payload', {}).get('id')
+  user = get_user(db, payload)
+
+  if not user:
+    raise HTTPException(status_code=404, detail='User not found.')
+  
+  medicine = get_specific_medicine(db, payload,data.medicine_id)
+
+  if not medicine:
+    raise HTTPException(status_code=404, detail='Medicine not found.')
+    
+  if inspect_day_duration(datetime.utcnow(), medicine.modified_at, 1):
+    raise HTTPException(status_code=403, detail='Medicine can only be modified after a day.')
+  
+  medicine = update_specific_medicine(
+    db,
+    payload,
+    data.medicine_id,
+    data.medicine_name,
+    data.net_content,
+    data.expiration_date,
+    data.color_name)
 
   return medicine

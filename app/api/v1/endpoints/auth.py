@@ -8,7 +8,7 @@ from app.core.security import create_token, verify_token, validate_password, ver
 from app.services import convert_datetime, inspect_day_duration
 
 from app.crud.token_crud import store_token, logout_token
-from app.crud.auth_crud import get_user, get_all_user, get_username, authenticate_user, store_user, update_user_field
+from app.crud.auth_crud import get_user, get_all_user, get_username, store_user, update_user_field
 
 from app.schemas import Token_Response, Account_Base, Account_Read, User_Auth, User_Read, User_Create, Change_Password
 
@@ -16,7 +16,11 @@ router = APIRouter()
 
 @router.post('/token', response_model=Token_Response, status_code=200)
 async def user_login(data: User_Auth, db: Session = Depends(get_db)):
-  user = authenticate_user(db, data.username, data.password)
+  user = get_username(db, data.username)
+
+  if not user or not verify_password(data.password, user.password_hash):
+    raise HTTPException(status_code=401, detail='Invalid username or password. Please try again.')
+
   token = create_token({'id': user.user_id, 'sub': user.username})
   stored_token = store_token(db, token)
 
@@ -108,6 +112,7 @@ async def read_user(token_payload = Depends(verify_token), db: Session = Depends
   
   return {
     'user_id': user.user_id,
+    'dispenser_code': user.dispenser_code,
     'username': user.username,
     'created_at': convert_datetime(user.created_at),
     'modified_at': convert_datetime(user.modified_at)

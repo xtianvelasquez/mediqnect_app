@@ -30,6 +30,13 @@ class Medicine_Read(Medicine_Base):
 class Medicine_Delete(BaseModel):
   medicine_id: int
 
+class Medicine_Edit(BaseModel):
+  medicine_id: int
+  medicine_name: Optional[str] = None
+  net_content: Optional[int] = None
+  expiration_date: Optional[date] = None
+  color_name: Optional[str] = None
+
 class Medicine_Compartment_Base(BaseModel):
   compartment_id: int
 

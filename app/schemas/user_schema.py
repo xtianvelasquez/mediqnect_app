@@ -13,6 +13,7 @@ class User_Create(User_Base):
 
 class User_Read(User_Base):
   user_id: int
+  dispenser_code: Optional[str]
   created_at: datetime
   modified_at: datetime
 
