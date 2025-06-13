@@ -3,6 +3,7 @@ paho-mqtt==2.1.0
 passlib[bcrypt]==1.7.4
 pyjwt==2.10.1
 pymysql==1.1.1
+python-dotenv==1.1.0
 sqlalchemy==2.0.40
 tzdata==2024.1
 uvicorn==0.34.1
