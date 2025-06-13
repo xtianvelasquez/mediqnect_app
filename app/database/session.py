@@ -1,12 +1,9 @@
 import os
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
-from app.config import db_credentials
-
-# db_url = f'mysql+pymysql://{db_credentials['db_user']}@{db_credentials['db_host']}/{db_credentials['db_name']}'
-# engine = create_engine(db_url)
-# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+load_dotenv()
 
 db_url = os.getenv('DATABASE_URL')
 if db_url and db_url.startswith('mysql://'):
