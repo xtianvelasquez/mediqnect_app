@@ -10,7 +10,7 @@ class User(Base):
   user_id = Column(Integer, primary_key=True, autoincrement=True)
   username = Column(String(50), unique=True, nullable=False, index=True)
   password_hash = Column(String(255), nullable=False)
-  dispenser_code = Column(String(20), unique=True)
+  dispenser_code = Column(String(20))
   created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0))
   modified_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0), onupdate=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0))
 

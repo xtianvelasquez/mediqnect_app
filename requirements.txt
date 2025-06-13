@@ -1,9 +1,0 @@
-fastapi
-paho-mqtt
-passlib[bcrypt]
-pyjwt
-pymysql
-sqlalchemy
-tzdata
-uvicorn
-websockets

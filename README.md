@@ -14,6 +14,11 @@ file: https://download.oracle.com/java/21/archive/jdk-21.0.6_windows-x64_bin.exe
 link: https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html
 Process: Install it and copy path directory
 
+Download OpenSSL:
+file: Win64 OpenSSL v3.5.0 Light
+link: https://slproweb.com/products/Win32OpenSSL.html
+Process: Install it and copy path directory
+
 **Add ADB to Your System’s PATH**
 Step 1: Locate ADB
 1. Open File Explorer and navigate to: C:\Users\<user>\AppData\Local\Android\Sdk\platform-tools
