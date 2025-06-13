@@ -1,22 +1,19 @@
 services:
   - type: web
-    name: mediqnect_app
+    name: mediqnect-backend
     env: python
     region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: mediqnect-mysql
+          name: mediqnect-db
           property: connectionString
     autoDeploy: true
 
 databases:
-  - name: mediqnect-mysql
+  - name: mediqnect
     plan: free
-    databaseName: mediqnect
-    user: mediqnect_user
-    ipAllowList: ["0.0.0.0/0"]
     postgres: false
