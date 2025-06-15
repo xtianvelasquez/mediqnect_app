@@ -90,6 +90,10 @@ def update_medicine(data: Medicine_Edit, token_payload = Depends(verify_token), 
   payload = token_payload.get('payload', {}).get('id')
   user = get_user(db, payload)
 
+  print('data:', data)
+  print('payload:', payload)
+  print('token_payload:', token_payload)
+
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
   

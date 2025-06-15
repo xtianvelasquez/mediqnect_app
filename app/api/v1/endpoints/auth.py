@@ -18,11 +18,16 @@ router = APIRouter()
 async def user_login(data: User_Auth, db: Session = Depends(get_db)):
   user = get_username(db, data.username)
 
+  print(data)
+
   if not user or not verify_password(data.password, user.password_hash):
     raise HTTPException(status_code=401, detail='Invalid username or password. Please try again.')
 
   token = create_token({'id': user.user_id, 'sub': user.username})
   stored_token = store_token(db, token)
+  
+  print(f'Generated Token: {token}')
+  print(f'Stored Token: {stored_token}')
 
   return {'access_token': stored_token, 'user': user.user_id, 'token_type': 'Bearer'}
 
@@ -120,5 +125,6 @@ async def read_user(token_payload = Depends(verify_token), db: Session = Depends
 
 @router.get('/protected', status_code=200)
 async def protected_route(token_payload: dict = Depends(verify_token)):
+  print(token_payload)
   payload = token_payload.get('payload', {}).get('sub')
   return {'message': f'Welcome, {payload}'}

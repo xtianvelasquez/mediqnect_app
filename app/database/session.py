@@ -3,8 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
-if os.getenv('RENDER') is None:
-  load_dotenv()
+load_dotenv()
 
 db_url = os.getenv('DATABASE_URL')
 if db_url and db_url.startswith('mysql://'):

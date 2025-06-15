@@ -101,10 +101,10 @@ Run this command in HeidiSQL: CREATE DATABASE if NOT EXISTS mediqnect;
 Open your terminal in the project's root directory and run the following command:
 npm install axios
 npm install mqtt
-npm install cordova-plugin-local-notification
 npm install @awesome-cordova-plugins/local-notifications
+npm install @awesome-cordova-plugins/core --save
+npm install cordova-plugin-local-notification
 npm install @capacitor/local-notifications
-npm install @capacitor/preferences
 
 **Backend Dependency Instalations**
 Open your command prompt and run the following command:
@@ -113,6 +113,7 @@ pip install paho-mqtt
 pip install passlib[bcrypt]
 pip install pyjwt
 pip install pymysql
+pip install python-dotenv
 pip install sqlalchemy
 pip install tzdata
 pip install uvicorn
@@ -126,3 +127,7 @@ verify /protected: curl -H "Authorization: Bearer <your-token>" http://localhost
 **Useful Commands**
 ipconfig
 adb devices
+
+- Use ADB Commands to Force Refresh Rate
+adb shell settings put system peak_refresh_rate 120.0
+adb shell settings put system min_refresh_rate 120.0
