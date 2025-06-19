@@ -97,10 +97,7 @@ def update_medicine(data: Medicine_Edit, token_payload = Depends(verify_token), 
 
   if not medicine:
     raise HTTPException(status_code=404, detail='Medicine not found.')
-    
-  if inspect_day_duration(datetime.utcnow(), medicine.modified_at, 1):
-    raise HTTPException(status_code=403, detail='Medicine can only be modified after a day.')
-  
+
   medicine = update_specific_medicine(
     db,
     payload,

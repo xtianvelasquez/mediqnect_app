@@ -137,6 +137,8 @@ async def delete_user(token_payload = Depends(verify_token), db: Session = Depen
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
   
+  logged = logout_token(db, token_payload['raw'])
+  print(logged)
   delete_user = delete_specific_user(db, payload)
 
   return delete_user

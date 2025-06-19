@@ -51,7 +51,7 @@ def get_all_schedule(db: Session, user_id: int, intake_id: int, status_id: int):
       schedule_payload = {
         'user_id': schedule.user_id,
         'intake_id': schedule.intake_id,
-        'scheduled_datetime': convert_datetime(schedule.scheduled_datetime),
+        'scheduled_datetime': schedule.scheduled_datetime,
         'schedule_id': schedule.schedule_id,
         'medicine_name': medicine_compartment.medicine.medicine_name,
         'color_name': color.color_name
