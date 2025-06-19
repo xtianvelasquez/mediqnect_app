@@ -8,7 +8,7 @@ from app.core.security import create_token, verify_token, validate_password, ver
 from app.services import convert_datetime, inspect_day_duration
 
 from app.crud.token_crud import store_token, logout_token
-from app.crud.auth_crud import get_user, get_all_user, get_username, store_user, update_user_field
+from app.crud.auth_crud import get_user, get_all_user, get_username, store_user, update_user_field, delete_specific_user
 
 from app.schemas import Token_Response, Account_Base, Account_Read, User_Auth, User_Read, User_Create, Change_Password
 
@@ -97,7 +97,7 @@ async def update_password(
 
   return new_password
 
-@router.post('/logout', status_code=204)
+@router.post('/logout', status_code=200)
 async def logout(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
   logged = logout_token(db, token_payload['raw'])
   return logged
@@ -128,3 +128,15 @@ async def protected_route(token_payload: dict = Depends(verify_token)):
   print(token_payload)
   payload = token_payload.get('payload', {}).get('sub')
   return {'message': f'Welcome, {payload}'}
+
+@router.post('/delete/user', status_code=200)
+async def delete_user(token_payload = Depends(verify_token), db: Session = Depends(get_db)):
+  payload = token_payload.get('payload', {}).get('id')
+  user = get_user(db, payload)
+
+  if not user:
+    raise HTTPException(status_code=404, detail='User not found.')
+  
+  delete_user = delete_specific_user(db, payload)
+
+  return delete_user

@@ -180,6 +180,7 @@ def store_prescription(
         schedules = generate_schedules(intake_table)
         intake_table.is_scheduled = True
         db.add_all(schedules)
+        db.flush()
 
       # Check if compartment is already occupied
       compartment_table = get_specific_compartment(db, medicine_compartment_table.compartment_id)

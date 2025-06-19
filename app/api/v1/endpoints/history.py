@@ -49,10 +49,12 @@ def update_history(
   if not history:
     raise HTTPException(status_code=404, detail='History not found.')
   
-  start = convert_to_utc(schedule.scheduled_datetime)
-  end = data.history_datetime
-  
-  if inspect_day_duration(start.date(), end.date(), 1) and inspect_mins_duration(start.time(), end.time(), 5):
+  start = convert_to_utc(schedule.scheduled_datetime).replace(microsecond=0)
+  end = convert_to_utc(data.history_datetime).replace(microsecond=0)
+
+  if start == end:
+    status = HISTORY_STATUS['COMPLETED']
+  elif inspect_day_duration(start.date(), end.date(), 0) and inspect_mins_duration(start, end, 5):
     status = HISTORY_STATUS['COMPLETED']
   else:
     status = HISTORY_STATUS['LATE']

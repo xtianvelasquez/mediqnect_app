@@ -58,7 +58,7 @@ def update_specific_history(db: Session, user_id: int, schedule_id: int, history
     db.commit()
     db.refresh(history)
 
-    return {'message': 'Your missed medicine has been successfully updated.'}
+    return {'message': 'Your schedule has been successfully updated.'}
   
   except SQLAlchemyError as e:
     db.rollback()

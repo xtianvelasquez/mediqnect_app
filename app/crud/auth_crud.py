@@ -32,10 +32,10 @@ def get_username(db: Session, username: str):
     return db.query(User).filter(User.username == username).first() 
   
   except SQLAlchemyError as e:
-      raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
   
   except Exception as e:
-      raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
 def store_user(db: Session, username: str, password: str, dispenser_code: str):
   try:
@@ -67,6 +67,21 @@ def update_user_field(db: Session, user: str, field: str, value: str):
     db.commit()
     db.refresh(user)
     return {'message': f'Your {field} has been changed successfully.'}
+
+  except SQLAlchemyError as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+
+  except Exception as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+
+def delete_specific_user(db: Session, user_id: int):
+  try:
+    user = db.query(User).filter(User.user_id == user_id).first()
+    db.delete(user)
+    db.commit()
+    return {'message': 'User deleted successfully!'}
 
   except SQLAlchemyError as e:
     db.rollback()
