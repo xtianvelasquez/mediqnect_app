@@ -54,8 +54,9 @@ def check_and_send_alarms(db: Session, user_id: int):
 
 def mark_missed_schedules():
   with SessionLocal() as db:
-    now = datetime.now(ZoneInfo('UTC'))
-    overdue_time = now - timedelta(minutes=6)
+    now = datetime.now(ZoneInfo('Asia/Manila')).replace(second=0, microsecond=0)
+    now_naive = now.replace(tzinfo=None)
+    overdue_time = now_naive - timedelta(minutes=6)
 
     schedules = db.query(Schedule).filter(
       Schedule.status_id == SCHEDULE_STATUS['ONGOING'],

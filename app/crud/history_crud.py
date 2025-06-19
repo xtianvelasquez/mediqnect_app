@@ -38,9 +38,9 @@ def get_all_history(db: Session, user_id: int):
       history_payload = {
         'user_id': history.user_id,
         'schedule_id': history.schedule_id,
-        'scheduled_datetime': convert_datetime(history.schedule.scheduled_datetime),
+        'scheduled_datetime': history.schedule.scheduled_datetime,
         'history_id': history.history_id,
-        'history_datetime': convert_datetime(history.history_datetime),
+        'history_datetime': history.history_datetime,
         'medicine_name': intake.medicine.medicine_name,
         'status_name': history.status.status_name,
       }

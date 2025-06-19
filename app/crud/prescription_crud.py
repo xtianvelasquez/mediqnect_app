@@ -21,7 +21,7 @@ def get_specific_medicine(db: Session, user_id: int, medicine_id: int):
   
 def get_specific_intake(db: Session, user_id: int, intake_id: int):
   try:
-    return db.query(Intake).filter(Intake.user_id == user_id, Intake.medicine_id == intake_id).first()
+    return db.query(Intake).filter(Intake.user_id == user_id, Intake.intake_id == intake_id).first()
   
   except SQLAlchemyError as e:
     raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
