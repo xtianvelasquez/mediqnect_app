@@ -8,7 +8,7 @@ class Schedule(Base):
   schedule_id = Column(Integer, primary_key=True, autoincrement=True)
   user_id = Column(Integer, ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)
   intake_id = Column(Integer, ForeignKey('intake.intake_id', ondelete='CASCADE'), nullable=False)
-  scheduled_datetime = Column(DateTime(timezone=True), nullable=False, index=True)
+  scheduled_datetime = Column(DateTime, nullable=False, index=True)
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 
   user = relationship('User', back_populates='schedule')

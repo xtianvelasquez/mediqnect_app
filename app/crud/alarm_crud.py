@@ -9,7 +9,7 @@ from app.models import Medicine_Compartment, Schedule, Intake_History
 from app.constants import SCHEDULE_STATUS, HISTORY_STATUS
 
 def check_and_send_alarms(db: Session, user_id: int):
-  now = datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0)
+  now = datetime.now(ZoneInfo('Asia/Manila')).replace(second=0, microsecond=0)
   print(f'Checking alarms for user {user_id} at {convert_datetime(now)}') # Testing
 
   sent_alarms = []

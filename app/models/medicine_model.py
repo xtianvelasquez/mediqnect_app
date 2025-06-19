@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Date, DateTime, ForeignKey
+from sqlalchemy import Column, String, Integer, Date, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -20,8 +20,8 @@ class Medicine(Base):
   form_id = Column(Integer, ForeignKey('medicine_form.form_id', ondelete='CASCADE'), nullable=False)
   net_content = Column(Integer)
   expiration_date = Column(Date)
-  created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0))
-  modified_at = Column(DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0), onupdate=lambda: datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0))
+  created_at = Column(DateTime, server_default=func.now())
+  modified_at = Column(DateTime, default=func.now(), onupdate=func.now())
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 
   user = relationship('User', back_populates='medicine')
