@@ -1,7 +1,5 @@
 from sqlalchemy import Column, String, Integer, Date, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from app.database.base import Base
 
@@ -20,7 +18,7 @@ class Medicine(Base):
   form_id = Column(Integer, ForeignKey('medicine_form.form_id', ondelete='CASCADE'), nullable=False)
   net_content = Column(Integer)
   expiration_date = Column(Date)
-  created_at = Column(DateTime, server_default=func.now())
+  created_at = Column(DateTime, default=func.now())
   modified_at = Column(DateTime, default=func.now(), onupdate=func.now())
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 

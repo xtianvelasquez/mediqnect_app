@@ -10,7 +10,7 @@ app = FastAPI(title='MediQnect')
 
 app.add_middleware(
   CORSMiddleware,
-  allow_origins=['http://localhost:8100', 'http://192.168.147.30:8100', 'ws://192.168.147.30:8100'],
+  allow_origins=['http://localhost:8100', 'http://192.168.82.30:8100', 'ws://192.168.82.30:8100'],
   allow_credentials=True,
   allow_methods=['OPTIONS', 'POST', 'GET', 'DELETE', 'PATCH', 'PUT'],
   allow_headers=['Content-Type', 'Authorization']

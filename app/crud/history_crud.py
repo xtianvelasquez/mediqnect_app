@@ -2,7 +2,6 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
-from app.services import convert_datetime
 from app.models import Intake, Intake_History
 
 def get_specific_history(db: Session, user_id: int, schedule_id: int, history_id: int):

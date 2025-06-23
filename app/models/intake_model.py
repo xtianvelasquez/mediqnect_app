@@ -1,7 +1,5 @@
 from sqlalchemy import Column, String, text, Integer, DateTime, Boolean, ForeignKey, func
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from app.database.base import Base
 
@@ -31,7 +29,7 @@ class Intake(Base):
   component_id = Column(Integer, ForeignKey('dose_component.component_id', ondelete='CASCADE'), nullable=False)
   color_id = Column(Integer, ForeignKey('color.color_id', ondelete='SET NULL'), nullable=True)
   is_scheduled = Column(Boolean, default=False, server_default=text('false'))
-  created_at = Column(DateTime, server_default=func.now())
+  created_at = Column(DateTime, default=func.now())
   modified_at = Column(DateTime, default=func.now(), onupdate=func.now())
   status_id = Column(Integer, ForeignKey('statuses.status_id', ondelete='SET NULL'), nullable=True)
 

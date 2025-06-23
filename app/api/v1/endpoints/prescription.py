@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 
 from app.database.session import get_db
 from app.core.security import verify_token
-from app.services import inspect_day_duration
+from app.services import inspect_day_duration, convert_to_tz
 from app.crud.auth_crud import get_user
 from app.crud.prescription_crud import get_all_intake, get_specific_medicine, update_specific_medicine, store_prescription, delete_specific_medicine
 from app.schemas import Color_Base, Medicine_Base, Medicine_Edit, Medicine_Delete, Medicine_Compartment_Base, Intake_Base, Intake_Read
@@ -40,9 +40,13 @@ async def create_prescription(
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
   
-  start = intake.start_datetime
-  end = intake.end_datetime
-  now = datetime.now(ZoneInfo('UTC'))
+  now = datetime.now(ZoneInfo('Asia/Manila')).replace(second=0, microsecond=0)
+  start = convert_to_tz(intake.start_datetime)
+  end = convert_to_tz(intake.end_datetime)
+
+  print(f'now {now}')
+  print(f'start {start}')
+  print(f'end {end}')
 
   if start < now or end.date() < now.date():
     raise HTTPException(status_code=404, detail='Start or end datetime cannot be in the past.')

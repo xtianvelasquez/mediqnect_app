@@ -6,4 +6,4 @@ class Medicine_Form_Enum(str, Enum):
 
 class Dose_Component_Enum(str, Enum):
   tablet = 'tablet'
-  mililiter = 'mililiter'
+  milliliter = 'milliliter'

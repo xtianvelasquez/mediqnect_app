@@ -5,7 +5,6 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from app.models import Token
-from app.services import convert_to_utc
 from app.core.security import decode_token
 
 def store_token(db: Session, token: str):
@@ -15,13 +14,13 @@ def store_token(db: Session, token: str):
     raise HTTPException(status_code=500, detail=f'Token decoding failed: {str(e)}')
   
   try:
-    issued_at = datetime.fromtimestamp(decoded_token['iat'], tz=ZoneInfo('UTC'))
-    expires_at = datetime.fromtimestamp(decoded_token['exp'], tz=ZoneInfo('UTC'))
+    issued_at = datetime.fromtimestamp(decoded_token['iat'], tz=ZoneInfo('Asia/Manila'))
+    expires_at = datetime.fromtimestamp(decoded_token['exp'], tz=ZoneInfo('Asia/Manila'))
 
     new_token = Token(
       token_hash=token,
-      issued_at=convert_to_utc(issued_at),
-      expires_at=convert_to_utc(expires_at),
+      issued_at=issued_at,
+      expires_at=expires_at,
       user_id=decoded_token['id']
     )
 
@@ -50,7 +49,7 @@ def logout_token(db: Session, token: str):
       raise HTTPException(status_code=404, detail='Token not found.')
     
     stored_token.is_active=False
-    stored_token.revoked_at=datetime.now(ZoneInfo('UTC')).replace(second=0, microsecond=0)
+    stored_token.revoked_at=datetime.now(ZoneInfo('Asia/Manila')).replace(second=0, microsecond=0)
     db.commit()
     db.refresh(stored_token)
 

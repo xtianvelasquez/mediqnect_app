@@ -1,23 +1,12 @@
 from datetime import timedelta
-from zoneinfo import ZoneInfo
+from app.services import convert_to_tz
 from app.models import Schedule
 from app.constants import SCHEDULE_STATUS
 
 def generate_schedules(intake):
-  start = intake.start_datetime
-  end = intake.end_datetime
+  current = convert_to_tz(intake.start_datetime)
+  end = convert_to_tz(intake.end_datetime)
   interval = intake.hour_interval
-  manila_tz = ZoneInfo('Asia/Manila')
-  
-  if start.tzinfo is None:
-    current = start.replace(tzinfo=manila_tz)
-  else:
-    current = start.astimezone(manila_tz)
-  
-  if end.tzinfo is None:
-    end = end.replace(tzinfo=manila_tz)
-  else:
-    end = end.astimezone(manila_tz)
     
   print(f'Start: {current} | tzinfo: {current.tzinfo}')
   print(f'End: {end} | tzinfo: {end.tzinfo}')

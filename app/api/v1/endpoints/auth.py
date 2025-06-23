@@ -5,7 +5,7 @@ from typing import List
 
 from app.database.session import get_db
 from app.core.security import create_token, verify_token, validate_password, verify_password, hash_password
-from app.services import convert_datetime, inspect_day_duration
+from app.services import inspect_day_duration
 
 from app.crud.token_crud import store_token, logout_token
 from app.crud.auth_crud import get_user, get_all_user, get_username, store_user, update_user_field, delete_specific_user
@@ -17,8 +17,6 @@ router = APIRouter()
 @router.post('/token', response_model=Token_Response, status_code=200)
 async def user_login(data: User_Auth, db: Session = Depends(get_db)):
   user = get_username(db, data.username)
-
-  print(data)
 
   if not user or not verify_password(data.password, user.password_hash):
     raise HTTPException(status_code=401, detail='Invalid username or password. Please try again.')
@@ -119,8 +117,8 @@ async def read_user(token_payload = Depends(verify_token), db: Session = Depends
     'user_id': user.user_id,
     'dispenser_code': user.dispenser_code,
     'username': user.username,
-    'created_at': convert_datetime(user.created_at),
-    'modified_at': convert_datetime(user.modified_at)
+    'created_at': user.created_at,
+    'modified_at': user.modified_at
   }
 
 @router.get('/protected', status_code=200)

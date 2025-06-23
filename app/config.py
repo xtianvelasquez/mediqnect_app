@@ -1,6 +1,3 @@
-# set timezone
-LOCAL_TIMEZONE = 'Asia/Manila'
-
 # database credentials
 db_credentials = {
   'db_user': 'root',

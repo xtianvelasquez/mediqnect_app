@@ -1,7 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from app.services import convert_datetime
 from app.models import Medicine_Compartment, Schedule, Color
 
 def get_specific_schedule(db: Session, user_id: int, intake_id: int, schedule_id: int):
