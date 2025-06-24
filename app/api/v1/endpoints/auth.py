@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import List
 
+from app.config import mediqnect_code
 from app.database.session import get_db
 from app.core.security import create_token, verify_token, validate_password, verify_password, hash_password
 from app.services import inspect_day_duration
@@ -38,6 +39,9 @@ async def user_signup(data: User_Create, db: Session = Depends(get_db)):
   
   if not validate_password(data.password):
     raise HTTPException(status_code=400, detail='Password must be at least 6 characters long and include uppercase, lowercase, numbers, and special characters.')
+
+  if data.dispenser_code != mediqnect_code:
+    raise HTTPException(status_code=400, detail='Cannot connect to the dispenser.')
   
   stored_user = store_user(db, data.username, data.password, data.dispenser_code)
 

@@ -22,5 +22,6 @@ class Intake_History_Update(Intake_History_Base):
 
 # Alarm
 class Alarm_Confirm(Intake_History_Base):
+  user_id: int
   intake_id: int
   history_datetime: datetime

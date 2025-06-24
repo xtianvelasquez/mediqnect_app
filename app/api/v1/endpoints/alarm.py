@@ -3,8 +3,9 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, De
 from sqlalchemy.orm import Session
 from datetime import datetime
 from zoneinfo import ZoneInfo
-import asyncio, traceback
+import asyncio, traceback, json
 
+from app.mq_publisher import publish_message
 from app.database.session import get_db, SessionLocal
 from app.core.security import verify_token, verify_ws_token
 from app.services import convert_to_tz
@@ -46,6 +47,8 @@ async def get_schedules(websocket: WebSocket):
         alarms = check_and_send_alarms(db, payload)
         print(f'Sending alarms: {alarms}')
         await websocket.send_json({'alarms': jsonable_encoder(alarms)})
+        for alarm in alarms:
+          publish_message(json.dumps(jsonable_encoder(alarm)), f'mediqnect/alarm/{user.dispenser_code}')
 
       now = datetime.now(ZoneInfo('Asia/Manila'))
       seconds_to_next_minute = 60 - now.second - now.microsecond / 1_000_000
@@ -66,10 +69,9 @@ async def get_schedules(websocket: WebSocket):
 @router.post('/confirm', status_code=200)
 def confirm_alarm(
   data: Alarm_Confirm,
-  token_payload=Depends(verify_token),
   db: Session=Depends(get_db)):
 
-  payload = token_payload.get('payload', {}).get('id')
+  payload = data.user_id
   user = get_user(db, payload)
 
   if not user:
