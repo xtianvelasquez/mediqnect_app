@@ -7,7 +7,7 @@ import asyncio, traceback, json
 
 from app.mq_publisher import publish_message
 from app.database.session import get_db, SessionLocal
-from app.core.security import verify_token, verify_ws_token
+from app.core.security import verify_ws_token
 from app.services import convert_to_tz
 from app.crud.auth_crud import get_user
 from app.crud.alarm_crud import check_and_send_alarms

@@ -66,3 +66,25 @@ def update_specific_history(db: Session, user_id: int, schedule_id: int, history
   except Exception as e:
     db.rollback()
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+
+def confirm_history(db: Session, user_id: int, schedule_id: int, confirmation_datetime: datetime, status_id: int):
+  try:
+    new_history = Intake_History(
+      user_id=user_id,
+      schedule_id=schedule_id,
+      history_datetime=confirmation_datetime,
+      status_id=status_id
+    )
+
+    db.add(new_history)
+    db.commit()
+    db.refresh(new_history)
+    return new_history
+  
+  except SQLAlchemyError as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+  
+  except Exception as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
