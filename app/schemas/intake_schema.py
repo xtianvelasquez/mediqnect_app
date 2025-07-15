@@ -14,6 +14,7 @@ class Color_Base(BaseModel):
     from_attributes = True
 
 class Intake_Base(BaseModel):
+  medicine_id: int
   start_datetime: datetime
   end_datetime: datetime
   hour_interval: int
@@ -31,6 +32,10 @@ class Intake_Read(BaseModel):
   expiration_date: Optional[datetime]
   color_name: str
   status_name: str
+  compartment_name: str
 
   class Config:
     from_attributes = True
+
+class Delete_Intake(BaseModel):
+  intake_id: int

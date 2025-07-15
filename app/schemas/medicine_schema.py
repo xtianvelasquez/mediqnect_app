@@ -16,6 +16,7 @@ class Medicine_Base(BaseModel):
 class Medicine_Create(Medicine_Base):
   user_id: int
   status_id: int
+  compartment_id: int
 
 class Medicine_Read(Medicine_Base):
   medicine_id: int

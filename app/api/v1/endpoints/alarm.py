@@ -48,7 +48,11 @@ async def get_schedules(websocket: WebSocket):
         print(f'Sending alarms: {alarms}')
         await websocket.send_json({'alarms': jsonable_encoder(alarms)})
         for alarm in alarms:
-          publish_message(json.dumps(jsonable_encoder(alarm)), f'mediqnect/alarm/{user.dispenser_code}')
+          form = alarm.get('medicine_form')
+          if form == 1:
+            publish_message(json.dumps(jsonable_encoder(alarm)), 'mediqnect/alarm/esp32b')
+          elif form == 2:
+            publish_message(json.dumps(jsonable_encoder(alarm)), 'mediqnect/alarm/esp32a')
 
       now = datetime.now(ZoneInfo('Asia/Manila'))
       seconds_to_next_minute = 60 - now.second - now.microsecond / 1_000_000

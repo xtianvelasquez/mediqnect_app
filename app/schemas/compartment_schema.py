@@ -14,3 +14,6 @@ class Compartment_Read(Compartment_Base):
 
   class Config:
     from_attributes = True
+
+class Clean_Compartment(BaseModel):
+  compartment_id: int

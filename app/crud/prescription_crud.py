@@ -41,6 +41,12 @@ def get_all_intake(db: Session, user_id: int):
     return []
   
   for intake in intakes:
+    compartment_name = (
+      intake.medicine.medicine_compartment.compartment.compartment_name
+      if intake.medicine and intake.medicine.medicine_compartment and intake.medicine.medicine_compartment.compartment
+      else None
+    )
+    
     intake_payload = {
       'user_id': intake.user_id,
       'intake_id': intake.intake_id,
@@ -51,7 +57,8 @@ def get_all_intake(db: Session, user_id: int):
       'net_content': intake.medicine.net_content,
       'expiration_date': intake.medicine.expiration_date,
       'color_name': intake.color.color_name,
-      'status_name': intake.status.status_name
+      'status_name': intake.status.status_name,
+      'compartment_name': compartment_name
     }
     sent_intakes.append(intake_payload)
 
@@ -123,14 +130,27 @@ def delete_specific_medicine(db: Session, user_id: int, medicine_id: int):
     db.rollback()
     raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
 
+def delete_specific_intake(db: Session, user_id: int, intake_id: int):
+  try:
+    intake = get_specific_intake(db, user_id, intake_id)
+    db.delete(intake)
+    db.commit()
+  
+    return {'message': 'The intake has been successfully deleted.'}
+  
+  except SQLAlchemyError as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Database error: {str(e)}')
+
+  except Exception as e:
+    db.rollback()
+    raise HTTPException(status_code=500, detail=f'Unexpected error: {str(e)}')
+
 def store_prescription(
     db: Session,
     color_data,
-    medicine_data,
-    medicine_compartment_data,
     intake_data,
     user_id: int):
-
   try:
     # Use a transaction block for atomicity
     with db.begin_nested():  
@@ -143,36 +163,16 @@ def store_prescription(
         db.add(color_table)
         db.flush()
 
-      # Insert medicine data
-      medicine_dict = medicine_data.dict()
-      medicine_dict.update({
-        'user_id': user_id,
-        'status_id': MEDICINE_STATUS['AVAILABLE'] # available
-      })
-
-      medicine_table = Medicine(**medicine_dict)
-      db.add(medicine_table)
-      db.flush()
-
       # Insert intake data
       intake_dict = intake_data.dict()
       intake_dict.update({
         'user_id': user_id,
-        'medicine_id': medicine_table.medicine_id,
         'color_id': color_table.color_id,
         'status_id': INTAKE_STATUS['PENDING'] # pending
       })
       intake_table = Intake(**intake_dict)
       db.add(intake_table)
       db.flush()
-
-      # Insert medicine compartment data
-      medicine_compartment_table = Medicine_Compartment(
-        user_id=user_id,
-        compartment_id=medicine_compartment_data.compartment_id,
-        medicine_id=medicine_table.medicine_id
-      )
-      db.add(medicine_compartment_table)
 
       # Check if schedules for intake are already generated
       schedules_exist = get_specific_schedule(db, user_id, intake_table.intake_id, None)
@@ -181,11 +181,6 @@ def store_prescription(
         intake_table.is_scheduled = True
         db.add_all(schedules)
         db.flush()
-
-      # Check if compartment is already occupied
-      compartment_table = get_specific_compartment(db, medicine_compartment_table.compartment_id)
-      if compartment_table.status_id != COMPARTMENT_STATUS['OCCUPIED']:
-        compartment_table.status_id = COMPARTMENT_STATUS['OCCUPIED'] # occupied
 
     # Commit changes
     try:

@@ -2,7 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database.init_database import init_db
-from app.crud.alarm_crud import mark_missed_schedules
+from app.constants import mark_missed_schedules
+from app.crud.medicine_crud import mark_expired_medicines
 from app.mq_publisher import start_ack_subscriber, stop_ack_subscriber
 from app.database.scheduler import scheduler
 from app.api.v1.endpoints import router
@@ -11,7 +12,7 @@ app = FastAPI(title='MediQnect')
 
 app.add_middleware(
   CORSMiddleware,
-  allow_origins=['http://localhost:8100', 'http://192.168.69.30:8100', 'ws://192.168.69.30:8100'],
+  allow_origins=['http://localhost:8100', 'http://172.20.91.248:8100', 'ws://172.20.91.248:8100'],
   allow_credentials=True,
   allow_methods=['OPTIONS', 'POST', 'GET', 'DELETE', 'PATCH', 'PUT'],
   allow_headers=['Content-Type', 'Authorization']
@@ -32,6 +33,7 @@ def on_startup():
 
 def start_scheduler():
   scheduler.add_job(mark_missed_schedules, 'interval', minutes=1, id='missed_schedule_checker', replace_existing=True)
+  scheduler.add_job(mark_expired_medicines, 'interval', minutes=1, id='mark_expired_medicines', replace_existing=True)
   scheduler.start()
 
 @app.on_event('shutdown')

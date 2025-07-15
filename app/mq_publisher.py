@@ -33,11 +33,29 @@ def publish_message(message: str, topic: str):
   except Exception as e:
     print(f'MQTT publish failed: {e}')
 
+def publish_expired(message: str, topic: str):
+  client = mqtt.Client()
+  client.username_pw_set(USERNAME, PASSWORD)
+  client.tls_set(tls_version=ssl.PROTOCOL_TLS)
+
+  try:
+    client.connect(BROKER, PORT)
+    client.loop_start()
+    result = client.publish(topic, message, qos=1)
+    result.wait_for_publish()
+    time.sleep(1)
+    client.loop_stop()
+    client.disconnect()
+    print(f"Published message: '{message}' to topic: '{topic}'")
+  except Exception as e:
+    print(f'MQTT publish failed: {e}')
+
 def on_message(client, userdata, message):
   try:
     payload = json.loads(message.payload.decode())
 
     print(f'[MQTT] ACK received on topic {message.topic}: {payload}')
+
     user_id = payload.get('user_id')
     schedule_id = payload.get('schedule_id')
     status = payload.get('status')
@@ -49,49 +67,58 @@ def on_message(client, userdata, message):
     with SessionLocal() as db:
       user = get_user(db, user_id)
 
-      if status != 'missed':
-        if not user:
-          print(f"[MQTT] User not found with ID: {user_id}")
-          return
-        
-        schedule = get_specific_schedule(db, user.user_id, None, schedule_id)
-        if not schedule:
-          print(f'[MQTT] Schedule not found with ID: {schedule_id}')
-          return
-        
-        intake = get_specific_intake(db, user.user_id, schedule.intake_id)
-        if not intake:
-          print(f'[MQTT] Intake not found for schedule ID: {schedule_id}')
-          return
-        
-        if intake.medicine.net_content < intake.dose:
-          print('[MQTT] Not enough medicine left to confirm dose.')
-          return
-
-        confirmation_datetime = datetime.now(ZoneInfo('Asia/Manila')).replace(second=0, microsecond=0)
+      if not user:
+        print(f"[MQTT] User not found with ID: {user_id}")
+        return
+      
+      schedule = get_specific_schedule(db, user.user_id, None, schedule_id)
+      if not schedule:
+        print(f'[MQTT] Schedule not found with ID: {schedule_id}')
+        return
+      intake = get_specific_intake(db, user.user_id, schedule.intake_id)
+      if not intake:
+        print(f'[MQTT] Intake not found for schedule ID: {schedule_id}')
+        return
+      
+      confirmation_datetime = datetime.now(ZoneInfo('Asia/Manila')).replace(second=0, microsecond=0)
+      if status == 'missed':
         confirm_history(
           db,
           user_id=user.user_id,
           schedule_id=schedule.schedule_id,
           confirmation_datetime=confirmation_datetime,
-          status_id=HISTORY_STATUS['COMPLETED'])
-        
-        schedule.status_id = SCHEDULE_STATUS['ENDED']
-        intake.medicine.net_content -= intake.dose
+          status_id=HISTORY_STATUS['MISSED']
+        )
 
-        try:
-          db.commit()
-          db.refresh(schedule)
-          db.refresh(intake)
-          print('[MQTT] ACK processed successfully.')
-        except Exception as e:
-          db.rollback()
-          print(f'[MQTT] Database commit failed: {e}')
-          
+        print('[MQTT] ACK (missed) processed and logged.')
+
       else:
-        print('[MQTT] ACK (missed) processed successfully.')
+        if intake.medicine.net_content < intake.dose:
+          print('[MQTT] Not enough medicine left to confirm dose.')
+          return
+        
+        confirm_history(
+          db,
+          user_id=user.user_id,
+          schedule_id=schedule.schedule_id,
+          confirmation_datetime=confirmation_datetime,
+          status_id=HISTORY_STATUS['COMPLETED']
+        )
 
+        intake.medicine.net_content -= intake.dose
+        print('[MQTT] ACK (taken) processed and logged.')
+        
+      schedule.status_id = SCHEDULE_STATUS['ENDED']
+      try:
+        db.commit()
+        db.refresh(schedule)
+        db.refresh(intake)
         print('[MQTT] ACK processed successfully.')
+
+      except Exception as e:
+        db.rollback()
+        print(f'[MQTT] Database commit failed: {e}')
+
   except Exception as e:
     print(f'[MQTT] Error processing message: {e}')
 
@@ -118,8 +145,9 @@ def start_ack_subscriber():
   mqtt_client.on_message = on_message
 
   mqtt_client.connect(BROKER, PORT)
-  mqtt_client.subscribe('mediqnect/ack/DISP-A400F667B4FC')
-  print('[MQTT] Subscribed to mediqnect/ack/DISP-A400F667B4FC')
+  mqtt_client.subscribe('mediqnect/ack/esp32a')
+  mqtt_client.subscribe('mediqnect/ack/esp32b')
+  print('[MQTT] Subscribed to mediqnect/ack/esp32a')
   mqtt_client.loop_start()
 
 def stop_ack_subscriber():

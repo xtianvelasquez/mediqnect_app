@@ -28,8 +28,6 @@ async def read_prescription(token_payload = Depends(verify_token), db: Session =
 @router.post('/create/prescription', status_code=201)
 async def create_prescription(
   color: Color_Base = Body(...),
-  medicine: Medicine_Base = Body(...),
-  medicine_compartment: Medicine_Compartment_Base = Body(...),
   intake: Intake_Base = Body(...),
   token_payload = Depends(verify_token),
   db: Session = Depends(get_db)):
@@ -49,22 +47,20 @@ async def create_prescription(
   print(f'end {end}')
 
   if start < now or end.date() < now.date():
-    raise HTTPException(status_code=404, detail='Start or end datetime cannot be in the past.')
+    raise HTTPException(status_code=400, detail='Start or end datetime cannot be in the past.')
   
   if inspect_day_duration(start.date(), end.date(), 1):
-    raise HTTPException(status_code=404, detail='Start datetime must be before end datetime.')
+    raise HTTPException(status_code=400, detail='Start datetime must be before end datetime.')
 
   if start.date() == now.date() and start.time() < now.time():
-    raise HTTPException(status_code=404, detail='Start time must be in the future.')
+    raise HTTPException(status_code=400, detail='Start time must be in the future.')
 
   if not inspect_day_duration(start.date(), end.date(), 30):
-    raise HTTPException(status_code=404, detail='The duration between start and end is too long. Maximum schedule duration is 30 days.')
+    raise HTTPException(status_code=400, detail='The duration between start and end is too long. Maximum schedule duration is 30 days.')
   
   stored_prescription = store_prescription(
     db,
     color,
-    medicine,
-    medicine_compartment,
     intake,
     user.user_id)
   
