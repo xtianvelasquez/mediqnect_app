@@ -1,12 +1,16 @@
+from fastapi.encoders import jsonable_encoder
 from fastapi import APIRouter,  HTTPException, Body, Depends
 from sqlalchemy.orm import Session
 from typing import List
+import json
 
+from app.mq_publisher import publish_expired
 from app.database.session import get_db
 from app.core.security import verify_token
 from app.crud.auth_crud import get_user
 from app.crud.medicine_crud import get_all_medicine, store_medicine
 
+from app.models import Medicine, Compartment
 from app.schemas import Medicine_Base, Medicine_Read, Medicine_Compartment_Base, Clean_Compartment
 
 router = APIRouter()
@@ -60,6 +64,11 @@ def clean_medicine(data: Clean_Compartment, token_payload=Depends(verify_token),
   if not user:
     raise HTTPException(status_code=404, detail='User not found.')
 
-  print(data)
+  compartment = db.query(Compartment).filter(
+    Compartment.compartment_id == data.compartment_id
+  ).first()
+  if compartment:
+    publish_expired(json.dumps(jsonable_encoder(compartment)), f'mediqnect/alarm/{compartment.compartment_id}')
+    print(compartment)
 
   return {'message': 'Please wait for 5 minutes.'}
